@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Stellaria Bible">
+<title>Stellaria Bible</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Outfit:wght@300;500;700;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+--bg:#0a0a0f;--surface:#12121a;--surface2:#1a1a26;--border:#252536;
+--accent:#c8a04e;--accent2:#e8c96e;--text:#e8e8f0;--text2:#8888a0;
+--red:#e05050;--green:#50c878;--blue:#5090e0;
+--radius:14px;
+}
+html{font-size:16px;-webkit-text-size-adjust:100%}
+body{
+background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;
+min-height:100vh;min-height:100dvh;overflow-x:hidden;
+padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+/* HEADER */
+.header{
+position:sticky;top:0;z-index:100;
+background:rgba(10,10,15,0.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+padding:16px 16px 12px;border-bottom:1px solid var(--border);
+}
+.title-row{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.logo{
+width:36px;height:36px;border-radius:8px;
+background:linear-gradient(135deg,var(--accent),#8b6914);
+display:flex;align-items:center;justify-content:center;
+font-size:18px;font-weight:900;color:var(--bg);
+}
+.title{font-size:22px;font-weight:900;letter-spacing:-0.5px;color:var(--text)}
+.title span{color:var(--accent)}
+.stats{font-size:11px;color:var(--text2);font-weight:300;margin-left:auto;text-align:right;line-height:1.4}
+/* SEARCH */
+.search-wrap{position:relative}
+.search-input{
+width:100%;height:52px;
+background:var(--surface2);border:2px solid var(--border);border-radius:var(--radius);
+padding:0 48px 0 44px;
+font-size:17px;font-family:'Outfit',sans-serif;font-weight:500;
+color:var(--text);outline:none;
+transition:border-color .2s,box-shadow .2s;
+}
+.search-input::placeholder{color:var(--text2);font-weight:300}
+.search-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(200,160,78,0.15)}
+.search-icon{
+position:absolute;left:14px;top:50%;transform:translateY(-50%);
+width:20px;height:20px;color:var(--text2);pointer-events:none;
+}
+.clear-btn{
+position:absolute;right:10px;top:50%;transform:translateY(-50%);
+width:32px;height:32px;border-radius:50%;border:none;
+background:var(--border);color:var(--text2);font-size:18px;
+cursor:pointer;display:none;align-items:center;justify-content:center;
+-webkit-tap-highlight-color:transparent;
+}
+.clear-btn.show{display:flex}
+/* FILTERS */
+.filters{
+display:flex;gap:6px;padding:10px 16px 6px;overflow-x:auto;
+-webkit-overflow-scrolling:touch;scrollbar-width:none;
+}
+.filters::-webkit-scrollbar{display:none}
+.filter-btn{
+flex-shrink:0;padding:7px 14px;border-radius:20px;border:1.5px solid var(--border);
+background:transparent;color:var(--text2);font-size:13px;font-family:'Outfit',sans-serif;
+font-weight:500;cursor:pointer;transition:all .2s;
+-webkit-tap-highlight-color:transparent;white-space:nowrap;
+}
+.filter-btn.active{background:var(--accent);color:var(--bg);border-color:var(--accent);font-weight:700}
+/* RESULTS */
+.results-info{
+padding:8px 16px 4px;font-size:12px;color:var(--text2);font-weight:300;
+font-family:'JetBrains Mono',monospace;
+}
+.results{padding:4px 12px 100px;display:flex;flex-direction:column;gap:6px}
+.card{
+background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+padding:14px 16px;transition:border-color .15s;
+-webkit-tap-highlight-color:transparent;
+}
+.card:active{border-color:var(--accent)}
+.card-q{font-size:15px;font-weight:500;line-height:1.45;color:var(--text);margin-bottom:6px}
+.card-a{
+font-size:14px;font-weight:700;color:var(--accent2);line-height:1.4;
+font-family:'JetBrains Mono',monospace;
+}
+.card-tag{
+display:inline-block;margin-top:6px;padding:2px 8px;border-radius:6px;
+font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;
+}
+.tag-map{background:rgba(80,144,224,0.15);color:var(--blue)}
+.tag-quiz{background:rgba(200,160,78,0.15);color:var(--accent)}
+.tag-drop{background:rgba(80,200,120,0.15);color:var(--green)}
+.tag-bonus{background:rgba(224,80,80,0.15);color:var(--red)}
+.tag-song{background:rgba(180,100,220,0.15);color:#b464dc}
+.tag-geo{background:rgba(100,200,200,0.15);color:#64c8c8}
+/* HIGHLIGHT */
+mark{background:rgba(200,160,78,0.3);color:var(--accent2);border-radius:2px;padding:0 1px}
+/* EMPTY STATE */
+.empty{
+text-align:center;padding:60px 20px;color:var(--text2);
+}
+.empty-icon{font-size:48px;margin-bottom:12px;opacity:0.4}
+.empty-text{font-size:15px;font-weight:300;line-height:1.5}
+/* SCROLLBAR */
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+/* PWA feel */
+body{-webkit-user-select:none;user-select:none}
+.card-a{-webkit-user-select:text;user-select:text}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="title-row">
+    <div class="logo">S</div>
+    <div class="title">Stellaria <span>Bible</span></div>
+    <div class="stats" id="stats"></div>
+  </div>
+  <div class="search-wrap">
+    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
+    <input class="search-input" id="search" type="text" placeholder="Hledej cokoliv…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+    <button class="clear-btn" id="clearBtn" aria-label="Clear">×</button>
+  </div>
+</div>
+
+<div class="filters" id="filters"></div>
+<div class="results-info" id="resultsInfo"></div>
+<div class="results" id="results"></div>
+
+<script>
+// ===== DATA =====
+const DATA = [
+// MAPY - lokace předmětů
+{q:"Předmět se nachází v říši, která má malý ostrůvek na východ od pevniny",a:"Pyungmoo",cat:"map"},
+{q:"Předmět byl naposled spatřen poblíž města, které leží na rohu dvou spojujících se řek",a:"Pyungmoo",cat:"map"},
+{q:"Obchodní velmoc",a:"Pyungmoo",cat:"map"},
+{q:"Předmět se nachází v říši s řekou pramenící v západních horách, která končí svou pouť vodopádem spadajícím přímo do prameniště další řeky",a:"Pyungmoo",cat:"map"},
+{q:"Předmět se nachází ve městě, z kterého vedou 3 mosty",a:"Pyungmoo",cat:"map"},
+{q:"Předmět se nachází v nejzalidnější oblasti Stellarie",a:"Pyungmoo",cat:"map"},
+{q:"Předmět byl naposled spatřen v jednom z vedlejších měst, v kterém se nachází skupina bojovníků bílé přísahy na severovýchodě mapy",a:"Bakra",cat:"map"},
+{q:"Předmět se nachází poblíž města, jehož obyvatelé jsou uctívači černého větru a je známo pověstnou loukou",a:"Bakra",cat:"map"},
+{q:"Předmět se nachází z vedlejších měst, jehož boss obývá jihovýchodní část mapy",a:"Bakra",cat:"map"},
+{q:"Předmět byl naposled spatřen v jednom z vedlejších měst, v kterém se stařec nachází na jihozápadě mapy",a:"Bakra",cat:"map"},
+{q:"Předmět se nachází ve městě, jehož jižní pláž obklopuje moře",a:"Yongan",cat:"map"},
+{q:"Předmět se nachází v hornatém městě se spoustou zeleně obklopeného řekou",a:"Yongan",cat:"map"},
+{q:"Předmět se nachází poblíž města označeného rudou vlajkou",a:"Yongan",cat:"map"},
+{q:"Předmět se nachází poblíž města s nejvíce rybáři",a:"Yongan",cat:"map"},
+{q:"Předmět byl naposled spatřen v jednom z vedlejších měst, v kterém se nachází nefunkční portál do opičí jeskyně na východní straně mapy",a:"Yayang",cat:"map"},
+{q:"Předmět se nachází poblíž města, jehož obyvatelé jsou uctívači černého větru a je známo pověstnými vodopády v severní části mapy",a:"Yayang",cat:"map"},
+{q:"Předmět byl naposled spatřen v jednom z vedlejších měst, které obklopuje řeka ze všech stran",a:"Yayang",cat:"map"},
+{q:"Předmět byl naposled spatřen v jednom z vedlejších měst, v kterém se nachází rozbitý most",a:"Yayang",cat:"map"},
+{q:"Předmět byl naposled spatřen poblíž města, jehož západní část obklopuje moře",a:"Joan",cat:"map"},
+{q:"Předmět se nachází v městské oblasti, kde lze nalézt Tigrise u pláže",a:"Joan",cat:"map"},
+{q:"Předmět se nachází v městské oblasti, kde teleportér obývá okolí vysoké věže",a:"Joan",cat:"map"},
+{q:"Předmět se nachází ve městě s 2 jezery",a:"Joan",cat:"map"},
+{q:"Předmět se nachází v oblasti, která má na severu nefunkční portál do jeskyně",a:"Joan",cat:"map"},
+{q:"Předmět se nachází v jednom z vedlejších měst, kde je brutální velitel v ruinách",a:"Bokjung",cat:"map"},
+{q:"Předmět se nachází ve vedlejším městě s nejvíce jezery",a:"Bokjung",cat:"map"},
+{q:"Předmět byl naposledy spatřen v jednom z vedlejších měst kterým neprotéká žádná řeka",a:"Bokjung",cat:"map"},
+{q:"Předmět se nachází blízko města, kterého obyvatelé uctívají černý vítr a je známé pověstnými vodopády na jihu města",a:"Bokjung",cat:"map"},
+{q:"Předmět byl naposled spatřen v oblasti, v které řádí nakažlivý mor",a:"Ledová země",cat:"map"},
+{q:"Předmět byl naposled spatřen v oblasti se spoustou sněhu",a:"Ledová země",cat:"map"},
+{q:"Předmět se nachází v mapě, ze které se lze přímo dostat do kouzelného lesa",a:"Ledová země",cat:"map"},
+{q:"Předmět se nachází v oblasti, kde lze na krajích spatřit příšery vystavené radiaci",a:"Ledová země",cat:"map"},
+{q:"Předmět byl naposled spatřen v oblasti, v které se teplota málokdy dostane nad nulu",a:"Ledová země",cat:"map"},
+{q:"Předmět byl naposled spatřen v oblasti, která může mnohým připomínat Severní pól",a:"Ledová země",cat:"map"},
+{q:"Předmět byl naposled spatřen v oblasti, kde se zapotíte i při nic nedělání",a:"Ohnivá země",cat:"map"},
+{q:"Předmět byl naposled spatřen v oblasti s kamennými mosty",a:"Ohnivá země",cat:"map"},
+{q:"Předmět se nachází v oblasti, kde všechna tráva shořela do výbuchu slunce",a:"Ohnivá země",cat:"map"},
+{q:"Předmět byl naposled spatřen v oblasti, kterou si mnozí pletou se samotným peklem",a:"Ohnivá země",cat:"map"},
+{q:"Předmět se nachází v ohnivé oblasti, kde lze spatřit pouze jeden druh meteorů",a:"Ohnivá země",cat:"map"},
+{q:"Lesnatá oblast kde jsou pozůstatky koster dinosaurů",a:"Červený les",cat:"map"},
+{q:"Předmět se nachází v travnaté oblasti, spousta lidí se nedostane na konec mapy",a:"Červený les",cat:"map"},
+{q:"Předmět se nachází v lesnaté oblasti, která je rozpůlená řekou na 2 části",a:"Červený les / Zelený les",cat:"map"},
+{q:"Předmět se nachází v oblasti, kde je těžké najít konec",a:"Zelený les",cat:"map"},
+{q:"Oblast, kde je vstup do nejstrašidelnějšího lesa",a:"Zelený les",cat:"map"},
+{q:"Předmět se nachází v oblasti, která je mnohými přezdívaná jako kouzelný les",a:"Zelený les",cat:"map"},
+{q:"Předmět byl naposled spatřen v lesnaté oblasti, v které si každý myslí, že se točí v kruzích",a:"Zelený les",cat:"map"},
+{q:"Předmět byl naposled spatřen v oblasti, v které lze po krajích mapy spatřit vodopády",a:"Červený/Zelený les",cat:"map"},
+{q:"Předmět byl naposled spatřen v oblasti, kterou obývá jedna z nejmocnějších čarodějnic",a:"Jeskyně Vyhnanství I.",cat:"map"},
+{q:"Předmět se nachází ve starodávné jeskyni, kterou obývají stvůry z ledových krajin",a:"Jeskyně Vyhnanství I.",cat:"map"},
+{q:"Předmět se nachází ve starodávných katakombách, na jejímž konci se nachází vstup do dalších katakomb",a:"Jeskyně Vyhnanství I.",cat:"map"},
+{q:"Předmět byl naposled spatřen v oblasti, na jejímž konci se nachází vstup do dračí komnaty",a:"Jeskyně Vyhnanství II.",cat:"map"},
+{q:"Předmět se nachází ve starodávné jeskyni, kterou obývají uctívači ďábla",a:"Jeskyně Vyhnanství II.",cat:"map"},
+{q:"Předmět se nachází v podzemních katakombách, které se skládají z více než 80 místností",a:"Jeskyně Vyhnanství II.",cat:"map"},
+{q:"Předmět se nachází v oblasti, z které mnozí odcházejí s arachnofobií",a:"Pavoučí jeskyně II./III.",cat:"map"},
+{q:"Předmět se nachází v pavoučí jeskyni se spoustou barikád",a:"Pavoučí jeskyně II.",cat:"map"},
+{q:"Předmět se nachází v pavoučí jeskyni, kde nejsou žádní hadi",a:"Pavoučí jeskyně III.",cat:"map"},
+{q:"Předmět byl naposled spatřen v oblasti, která se hemží hady a pavouky",a:"Pavoučí jeskyně II.",cat:"map"},
+{q:"Oblast, která se hemží pavouky",a:"Pavoučí jeskyně III.",cat:"map"},
+{q:"Předmět byl naposled spatřen v pavoučí jeskyni, v které lze nalézt líheň baronky",a:"Pavoučí jeskyně III.",cat:"map"},
+{q:"Předmět byl naposled spatřen v oblasti, která se hemží jedovatými pavouky",a:"Pavoučí jeskyně III.",cat:"map"},
+{q:"Předmět byl naposled spatřen v pavoučí jeskyni s nejvíce místnostmi",a:"Pavoučí jeskyně II.",cat:"map"},
+{q:"Předmět se nachází v oblasti, o které tvrdí, že v ní lze spatřit duchy",a:"Hřbitov",cat:"map"},
+{q:"Předmět byl naposled spatřen v oblasti, která může vyvolávat pocity, že probíhá Halloween",a:"Hřbitov",cat:"map"},
+{q:"Předmět se nachází v oblasti, z která mnoha lidí má noční můry ještě dlouhé týdny",a:"Hřbitov",cat:"map"},
+{q:"Předmět se nachází v temné oblasti, v jejímž pravém dolním rohu lze spatřit kostlivce",a:"Hřbitov",cat:"map"},
+{q:"Předmět byl naposled spatřen v oblasti, které místní obyvatelé umírají žízní",a:"Poušť Yongbi",cat:"map"},
+{q:"Předmět byl naposled spatřen v oblasti se spoustou písku",a:"Poušť Yongbi",cat:"map"},
+{q:"Oblast, kde jsou banditi",a:"Poušť Yongbi",cat:"map"},
+{q:"Předmět se nachází v oblasti, kde lze spatřit vstup bránou zasypány kameny",a:"Poušť Yongbi",cat:"map"},
+{q:"Předmět byl naposledy spatřen v oblasti, kterou lze považovat za domov štírů a hadů",a:"Poušť Yongbi",cat:"map"},
+{q:"Předmět se nachází v oblasti, z které se lze přímo dostat do míst obývaných primáty",a:"Poušť Yongbi",cat:"map"},
+{q:"Oblast, kde se na pláži objevují krabi a žraloci",a:"Nefritový záliv",cat:"map"},
+{q:"Předmět byl naposled spatřen v oblasti, v které se vyskytují příšery připomínající lidi křížené se žralokem",a:"Nefritový záliv",cat:"map"},
+{q:"Předmět se nachází v oblasti, v které se nachází kult vrahů a zlodějů",a:"Nefritový záliv",cat:"map"},
+{q:"Předmět se nachází v oblasti, kterou na západu obklopuje pláž, na které je spoustu ztroskotaných lodí",a:"Nefritový záliv",cat:"map"},
+{q:"Předmět se nachází v oblasti, jejímž místní jsou starodávní uctívači fanatismu",a:"Chrám Hwang",cat:"map"},
+{q:"Předmět byl naposled spatřen v oblasti, v které lze spatřit přerostlé žáby",a:"Chrám Hwang",cat:"map"},
+{q:"Předmět je v oblasti, v které se nachází vstup do jedné z nejstarších démonických oblastí",a:"Chrám Hwang",cat:"map"},
+{q:"Předmět byl naposled spatřen v oblasti, kterou obývají obojživelní bojovníci",a:"Chrám Hwang",cat:"map"},
+{q:"Předmět byl naposled spatřen v oblasti, v které se boss dokáže po smrti znovuzrodit silnější a ovládá element větru",a:"Chrám Hwang",cat:"map"},
+{q:"Předmět se nachází v oblasti, na jejímž konci se nachází prastará věž",a:"Chrám Hwang",cat:"map"},
+{q:"Předmět byl naposled spatřen v oblasti, v jejímž středu se nachází prastará chrám",a:"Údolí Orků",cat:"map"},
+{q:"Předmět se nachází v oblasti, kde lze spatřit meteory z nichž vychází příšery které do dané mapy nepatří",a:"Orkové + Ledová země + Poušť Yongbi",cat:"map"},
+{q:"Předmět se nachází v oblasti skládající se z několika ostrovů",a:"Údolí Orků",cat:"map"},
+{q:"Předmět byl naposled spatřen v oblasti, v které se vyskytují příšery připomínající přerostlé gobliny",a:"Údolí Orků",cat:"map"},
+{q:"Předmět byl naposled spatřen v oblasti, o které se dá říct, že čím více se blížíte ke středu, tím potkáváte silnější příšery",a:"Údolí Orků",cat:"map"},
+{q:"Předmět byl naposled spatřen v oblasti, v které se nachází vstup do prastaré jeskyně",a:"Údolí Orků",cat:"map"},
+{q:"Předmět se nachází v oblasti, plné živých mrtvých",a:"Zombieland",cat:"map"},
+{q:"Předmět byl naposled spatřen v oblasti, o které se tvrdí, že si místní pochutnávají na mozích",a:"Zombieland",cat:"map"},
+{q:"Předmět se nachází v mapě, na jejímž konci se nachází vstup do katedrály schované ve skále",a:"Zombieland",cat:"map"},
+{q:"Předmět byl naposled spatřen v oblasti s mnoha hroby",a:"Zombieland",cat:"map"},
+{q:"Předmět byl naposled spatřen v oblasti, v které se nachází aktivní sopka uprostřed mapy",a:"Sunshine",cat:"map"},
+{q:"Předmět se nachází v oblasti, v které slunce vypálilo veškerou vegetaci",a:"Sunshine",cat:"map"},
+{q:"Předmět byl naposled spatřen v oblasti, kterou obývají pouze 2 národy ezoteriků tmavší rasy",a:"Sunshine",cat:"map"},
+{q:"Předmět se nachází v malé mapě, která může připomínat ohnivou zemi",a:"Sunshine",cat:"map"},
+{q:"Předmět se nachází v podzemí, kde lze všude cítit smrt a hnilobu",a:"Andunské katakomby",cat:"map"},
+{q:"Předmět se nachází v oblasti, ve které smrt mágové proměňují na život v utrpení",a:"Andunské katakomby",cat:"map"},
+{q:"Předmět se nachází v podzemí, kde lze spatřit mrtvoly ve zdech",a:"Andunské katakomby",cat:"map"},
+{q:"Předmět se nachází v údolí, kterým protékají řeky plné lávy",a:"Lávové pole",cat:"map"},
+{q:"Předmět se nachází v oblasti, kde lze na zemi spatřit pentagram",a:"Lávové pole",cat:"map"},
+{q:"Předmět se nachází v oblasti, v které se monstra rodí z lávy",a:"Lávové pole",cat:"map"},
+{q:"Předmět byl naposled spatřen v oblasti, o které se tvrdí, že se vás příroda snaží zabít",a:"Příroda",cat:"map"},
+{q:"Předmět byl naposled spatřen v oblasti, která může svým tvarem připomínat Útes Gautama",a:"Příroda",cat:"map"},
+{q:"Místo, kde se doslova příroda probouzí k životu",a:"Příroda",cat:"map"},
+{q:"Předmět se nachází v oblasti, kde lze spatřit oživlé houby",a:"Příroda",cat:"map"},
+{q:"Předmět byl naposled spatřen v oblasti, jejíž značnou část tvoří civilizace prastarých hadů",a:"Saharská Poušť",cat:"map"},
+{q:"Předmět byl naposled spatřen v oblasti s ještěřími válečníky",a:"Saharská Poušť",cat:"map"},
+{q:"Předmět se nachází v oblasti, ve které se nachází Šalamounova hrobka",a:"Saharská Poušť",cat:"map"},
+{q:"Předmět se nachází v rozsáhlé oblasti, která po celé své délce víceméně rovinka a je rozdělená na 3 části",a:"Saharská Poušť",cat:"map"},
+{q:"Předmět je v oblasti, kterou obývají bojovníci malého vzrůstu připomínající hyeny křížené s člověkem",a:"Pohoří Gnollů",cat:"map"},
+{q:"Předmět se nachází v malém údolí obklopeného vysokými horami",a:"Pohoří Gnollů",cat:"map"},
+{q:"Předmět byl naposled spatřen v oblasti s civilizací obrů",a:"Pohoří Gnollů",cat:"map"},
+{q:"Předmět se nachází v údolí, které obývají 2 různé druhy monster",a:"Pohoří Gnollů",cat:"map"},
+{q:"Předmět se nachází v oblasti, kde se vyskytuje chrám uctívaný starodávnou civilizací primátů",a:"Útes Gautama",cat:"map"},
+{q:"Předmět byl naposled spatřen v oblasti, kde lze nalézt starodávné kyklopy",a:"Útes Gautama",cat:"map"},
+{q:"Předmět se nachází v mapě, v které lze uprostřed spatřit ostrov, na kterém se nachází svatyně",a:"Útes Gautama",cat:"map"},
+{q:"Předmět byl naposled spatřen v oblasti, kterou sdílí opice s orky",a:"Útes Gautama",cat:"map"},
+{q:"Předmět se nachází v oblasti, v které se nachází věž, od které je výhled na celé údolí",a:"Údolí Draků",cat:"map"},
+{q:"Předmět se nachází v oblasti, kterou stráží dračí bojovníci",a:"Údolí Draků",cat:"map"},
+{q:"Předmět se nachází v oblasti, v které ze začátku procházíte obydlenou oblastí a poté se dostanete do volné přírody",a:"Údolí Draků",cat:"map"},
+{q:"Předmět se nachází v oblasti, která je obklopena oceánem ze všech stran",a:"Přeludný ostrov",cat:"map"},
+{q:"Předmět se nachází v oblasti, kde lze spatřit nejvíce druhů meteorů",a:"Přeludný ostrov",cat:"map"},
+{q:"Předmět se nachází v oblasti, která je rozdělena na 4 systematické části",a:"Přeludný ostrov",cat:"map"},
+
+// OSVÍCENSTVÍ OTÁZKY + ODPOVĚDI
+{q:"Jaký byl název prvního počítače?",a:"ENIAC",cat:"quiz"},
+{q:"Kde se nachází město San Marino?",a:"San Marino (stát v Itálii)",cat:"quiz"},
+{q:"Který chemický prvek se používá pro výrobu solárních panelů?",a:"Křemík",cat:"quiz"},
+{q:"Kolik pravých úhlů má rovnostranný trojúhelník?",a:"0 (žádný)",cat:"quiz"},
+{q:"Kdo byl prvním prezidentem USA?",a:"George Washington",cat:"quiz"},
+{q:"Jaký lze na Stellarii získat nejdražší prut yangů?",a:"1B",cat:"quiz"},
+{q:"Kolik let trvala stoletá válka?",a:"116",cat:"quiz"},
+{q:"Hlavní město Maďarska?",a:"Budapešť",cat:"quiz"},
+{q:"Které z následujících měst leží v Malajsii?",a:"Kuala Lumpur",cat:"quiz"},
+{q:"Jaký druh reakce se používá při výrobě chloru?",a:"Elektrolýza",cat:"quiz"},
+{q:"Kolik se v Pyungmoo nachází rybářů?",a:"(doplnit)",cat:"quiz"},
+{q:"Esej?",a:"Úvaha",cat:"quiz"},
+{q:"Sloučenina dvou monomerů?",a:"Dimer",cat:"quiz"},
+{q:"Kdo je autorem knihy '1984'?",a:"George Orwell",cat:"quiz"},
+{q:"Kdo napsal knihu Moby-Dick?",a:"Herman Melville",cat:"quiz"},
+{q:"Kde jsou v těle umístěny hlasivky?",a:"Hrtan",cat:"quiz"},
+{q:"Kdo je autorem knihy Bída hořích deset tisíc?",a:"Upton Sinclair",cat:"quiz"},
+{q:"Autor knihy Bílá bouda?",a:"Karel Čapek",cat:"quiz"},
+{q:"Kdo napsal hru Spoutaný Prométheus?",a:"Aischylos",cat:"quiz"},
+{q:"Do jaké skupiny patří element helium?",a:"Vzácné plyny (18. skupina)",cat:"quiz"},
+{q:"Kdo byl první člověkem, který dosáhl pólu?",a:"Roald Amundsen",cat:"quiz"},
+{q:"Který římský císař se proslavil stavbami a infrastrukturou?",a:"Traianus",cat:"quiz"},
+{q:"První československý premiér?",a:"Karel Kramář",cat:"quiz"},
+{q:"Jeden z kompozitorů zakladatel české hudby?",a:"Bedřich Smetana",cat:"quiz"},
+{q:"Jaký druh reakce se používá při výrobě methanolu?",a:"Syntéza",cat:"quiz"},
+{q:"Nejvyšší vrchol Austrálie?",a:"Kosciuszko",cat:"quiz"},
+{q:"Jaký druh krystalické mřížky má grafit?",a:"Hexagonální",cat:"quiz"},
+{q:"Kolik má lidské tělo kostí?",a:"206",cat:"quiz"},
+{q:"Kdo je považován za zakladatele teorie relativity?",a:"Albert Einstein",cat:"quiz"},
+{q:"Z kolika sloupků se skládají kamenné mosty v Pyungmoo?",a:"(doplnit)",cat:"quiz"},
+{q:"Známý malíř renesanční Florencie?",a:"Sandro Botticelli",cat:"quiz"},
+{q:"Kdo je vynálezcem elektrického motoru?",a:"Michael Faraday",cat:"quiz"},
+{q:"Jaký druh hormonu se produkuje v hypofýze a reguluje růst?",a:"Somatotropin",cat:"quiz"},
+{q:"Která mapa se skrývá pod názvem Doyyumhwan?",a:"Ohnivá země",cat:"quiz"},
+{q:"Jaké je hlavní město Dánska?",a:"Kodaň",cat:"quiz"},
+{q:"Jaký je nejvyšší vrchol Jižní Ameriky?",a:"Aconcagua",cat:"quiz"},
+{q:"Který z následujících států se nenachází v Africe?",a:"Bhútán, Barma, Mauricius",cat:"quiz"},
+{q:"Kdo byl autorem knihy Mein Kampf?",a:"Adolf Hitler",cat:"quiz"},
+{q:"V kterém z následujících jazyků se používá cyrilice?",a:"Ruština / Bulharština",cat:"quiz"},
+{q:"Která země patří do tzv. Beneluxu?",a:"Belgie, Nizozemsko, Lucembursko",cat:"quiz"},
+{q:"Říše Aztéků se nacházela v?",a:"Mexiku",cat:"quiz"},
+{q:"Kdo je považován za otce chemie?",a:"Antoine Lavoisier",cat:"quiz"},
+{q:"Kolik procent populace (přibližně) žije na severní polokouli?",a:"90%",cat:"quiz"},
+{q:"Kdo napsal knihu Šifra mistra Leonarda?",a:"Dan Brown",cat:"quiz"},
+{q:"Jaký druh krystalické mřížky má hliník?",a:"Kubická",cat:"quiz"},
+{q:"Jaké je hlavní město Ázerbájdžánu?",a:"Baku",cat:"quiz"},
+{q:"Jaký druh reakce se používá při výrobě kyseliny sírové?",a:"Oxidace",cat:"quiz"},
+{q:"V jakém roce byla objevena první exoplaneta?",a:"1992",cat:"quiz"},
+{q:"Kolik ručních zbraní má vedle sebe Zbrojíř v Pyungmoo?",a:"24",cat:"quiz"},
+{q:"Jak se jmenovalo první plavidlo s člověkem ve vesmíru?",a:"Vostok 1",cat:"quiz"},
+{q:"V jakém oceánu leží Hawaii?",a:"Tichý oceán",cat:"quiz"},
+{q:"Která mapa se skrývá pod názvem Hasun Dong?",a:"Opičí jeskyně I.",cat:"quiz"},
+{q:"Jaká barva je specifická pro koňskou medaili V?",a:"Modrá",cat:"quiz"},
+{q:"V které mapě se nachází Harang?",a:"2 města",cat:"quiz"},
+{q:"Na které světové straně má Pyungmoo moře?",a:"Východ",cat:"quiz"},
+{q:"V které mapě se nachází Pung-Ho?",a:"Pavoučí jeskyně II.",cat:"quiz"},
+{q:"Jakým písmenem se označuje gravitační zrychlení?",a:"g",cat:"quiz"},
+{q:"Kolik stupňů má vnitřní úhel v rovnostranném trojúhelníku?",a:"60°",cat:"quiz"},
+{q:"Kdo napsal slavnou knihu Ifigenie v Aulidě?",a:"Euripides",cat:"quiz"},
+{q:"Jak se nazývá hlavní město Španělska?",a:"Madrid",cat:"quiz"},
+{q:"Kdo je autorem Mona Lisy?",a:"Leonardo da Vinci",cat:"quiz"},
+{q:"Kolik je na Stellarii titulů?",a:"62",cat:"quiz"},
+{q:"V jaké válce bojovala Johanka z Arku?",a:"Ve stoleté válce",cat:"quiz"},
+{q:"Idea o sjednocení všech slovanských národů je označována jako?",a:"Panslavismus",cat:"quiz"},
+{q:"Jaký level má příšera Pavoučky?",a:"43",cat:"quiz"},
+{q:"Které z následujících monster má level 42?",a:"Brutální specialista",cat:"quiz"},
+{q:"Kdo je vynálezcem elektromotoru?",a:"Michael Faraday",cat:"quiz"},
+{q:"Do kolika dungeonů máte přístup na Stellarii na levelu 90?",a:"5",cat:"quiz"},
+{q:"Ve kterém z následujících států se nejezdí po levé straně silnice?",a:"Filipíny",cat:"quiz"},
+{q:"Kdo je režisér filmu Návrat do budoucnosti?",a:"Robert Zemeckis",cat:"quiz"},
+{q:"Kdo nazpíval song Toxicity?",a:"System of a Down",cat:"quiz"},
+{q:"Jaký level má příšera Tmavý zaříkávač?",a:"51",cat:"quiz"},
+{q:"Kde se nachází město Phoenix?",a:"Arizona",cat:"quiz"},
+{q:"V které zemi se nachází nejhlubší jezero?",a:"Rusko",cat:"quiz"},
+{q:"Z jakých částí se skládá Bible?",a:"Starý a Nový zákon",cat:"quiz"},
+{q:"Jakou životnost mají červené krvinky?",a:"4 měsíce",cat:"quiz"},
+{q:"Ve které zemi najdeme nejvíce olivovníků?",a:"Španělsko",cat:"quiz"},
+{q:"Který z následujících bossů drží sekeru?",a:"Mahon",cat:"quiz"},
+{q:"Hlavní město Kambodže?",a:"Phnom Penh",cat:"quiz"},
+{q:"Kolik je potřeba krvelačných zbraní +0 na vykování jedné na +9?",a:"54",cat:"quiz"},
+{q:"Ve kterém oceánu/moři se nachází Tchaj-wan?",a:"Tichý oceán",cat:"quiz"},
+{q:"Které z následujících monster má level 57?",a:"Žabovoják",cat:"quiz"},
+{q:"Kde lze dropout kámen smrti?",a:"Doupě Kostlivců",cat:"drop"},
+{q:"Kde se nachází Metin hniloby?",a:"Andunské katakomby",cat:"quiz"},
+{q:"Za kolik DM lze pořídit v Item Shopu Reset bonusů osvícenství?",a:"2 000 DM",cat:"quiz"},
+{q:"Nejvyšší hora v Krkonoších (v m n.m.)?",a:"Sněžka 1603 m",cat:"quiz"},
+{q:"Kolik znamení horoskopu se nachází v egyptské astrologii?",a:"11",cat:"quiz"},
+{q:"Které fyzikální veličiny mají stejnou jednotku?",a:"Práce a Energie",cat:"quiz"},
+{q:"Kolik se rovná cosinus 0 stupňů?",a:"1",cat:"quiz"},
+{q:"Které z následujících monster má level 39?",a:"Silný Orčí Bojovník, Hrdý velký orčí bojovník",cat:"quiz"},
+{q:"Kdo nazpíval píseň Iron Man?",a:"Black Sabbath",cat:"song"},
+{q:"V které mapě se nachází památník Weol?",a:"První města",cat:"quiz"},
+{q:"Až kolik procent vonných látek může obsahovat parfém?",a:"40%",cat:"quiz"},
+{q:"Který stát má nejvyšší hustotu obyvatel?",a:"Monako",cat:"quiz"},
+{q:"Který z následujících států nemá přístup k moři/oceánu?",a:"Bhútán, Andorra, Severní Makedonie, Paraguay, Rwanda",cat:"quiz"},
+{q:"Které z následujících měst se nachází v Belgii?",a:"Antverpy",cat:"quiz"},
+{q:"V které mapě můžete nalézt monstrum jménem Jedovatý pavoučky?",a:"Pavoučí jeskyně I.",cat:"quiz"},
+{q:"Který z následujících ostrovů se nenachází v Karibiku?",a:"Guatemala, Nikaragua, Costa Rica, Panama, Maval",cat:"quiz"},
+{q:"Kolik yangů stojí u obchodníka s výstrojí nefritové náušnice?",a:"8 000",cat:"quiz"},
+{q:"Které z následujících měst leží v Chorvatsku?",a:"Záhřeb",cat:"quiz"},
+{q:"Jaký z vynálezů není známý jako vynález Thomase Edisona?",a:"Automobil",cat:"quiz"},
+{q:"Které z následujících měst má portál do druhé poloviny města nahoře uprostřed?",a:"Yongan",cat:"quiz"},
+{q:"Do kolika map (ne dungeonů) máte přístup na Stellarii na levelu 120?",a:"30",cat:"quiz"},
+{q:"Kolik je na Stellarii dungeonů?",a:"21 (Atlantida se nepočítá)",cat:"quiz"},
+{q:"Kolik metrů je vysoká hráz vodní nádrže Dalešice?",a:"100 m",cat:"quiz"},
+{q:"Která chemická reakce umožňuje rostlinám vyrábět vlastní potravu pomocí slunečního záření?",a:"Fotosyntéza",cat:"quiz"},
+{q:"Odkud pochází kniha lásky Kámasútra?",a:"Indie",cat:"quiz"},
+{q:"Ra (Re) je řecký bůh čeho?",a:"Ra není řecký bůh (je egyptský)",cat:"quiz"},
+{q:"Kdo zavedl v Číně komunistický režim?",a:"Mao Ce-tung",cat:"quiz"},
+{q:"Který historický událost byl klíčovým momentem rozpadu Sovětského svazu?",a:"Srpnový puč 1991",cat:"quiz"},
+{q:"Které z následujících monster má level 44?",a:"Mladý štíří muž, Vrchní Tmavý Arahan, Silný orčí generál",cat:"quiz"},
+{q:"Kolik stojí u obchodnice Elixír Slunce, Měsíce (E)?",a:"50 000 000",cat:"quiz"},
+{q:"Elixír Slunce, Měsíce (V)?",a:"30 000 000",cat:"quiz"},
+{q:"Elixír Slunce, Měsíce (S)?",a:"20 000 000",cat:"quiz"},
+{q:"Jakou hodnotu přidává Kámen ochrany +8?",a:"200",cat:"bonus"},
+{q:"Které z následujících měst leží na Slovinsku?",a:"Lublaň",cat:"quiz"},
+{q:"Která kapela nazpívala píseň Dead Memories?",a:"Slipknot",cat:"song"},
+{q:"Z kolika prken se skládá pacholkova ohrádka v Yongan?",a:"54",cat:"quiz"},
+{q:"Z kolika prken se skládá pacholkova ohrádka v Pyungmoo?",a:"65",cat:"quiz"},
+{q:"Z kolika prken se skládá pacholkova ohrádka v Joan?",a:"74",cat:"quiz"},
+{q:"Kdo nazpíval píseň Hope?",a:"Anathema",cat:"song"},
+{q:"Kolik yangů stojí u obchodníka s výstrojí brnění od levelu 34?",a:"15 000",cat:"quiz"},
+{q:"Kolik děloh má samice klokana?",a:"2",cat:"quiz"},
+{q:"V které z následujících map se vyskytuje brána hradu (Portál)?",a:"Údolí Orků, Ledová země, Chrám Hwang",cat:"quiz"},
+{q:"Které z následujících měst se nachází ve státě Texas?",a:"Dallas",cat:"quiz"},
+{q:"Které z následujících měst se nachází ve státě Kalifornie?",a:"San Diego",cat:"quiz"},
+{q:"Které z následujících příšer má level 71?",a:"Zlý Strom, Plamen",cat:"quiz"},
+{q:"Jaký level má příšera Dryáda?",a:"69",cat:"quiz"},
+{q:"Který z těchto států nikdy nebyl součástí Evropské unie?",a:"Švýcarsko, Island, Norsko",cat:"quiz"},
+{q:"Kde lze dropout modrý krystal?",a:"Jeskyně Vyhnanství",cat:"drop"},
+{q:"Kdo byl první člověkem, který se dotkl Měsíce?",a:"Neil Armstrong",cat:"quiz"},
+{q:"Jakou hodnotu má tangens 45 stupňů?",a:"1",cat:"quiz"},
+{q:"Který jazyk je v Evropě nejpoužívanější?",a:"Angličtina",cat:"quiz"},
+{q:"Která země je největším výrobcem cukru?",a:"Brazílie",cat:"quiz"},
+{q:"Jaká je nejdelší řeka Evropy?",a:"Volha",cat:"quiz"},
+{q:"Kolik zubů má Silný orčí zvěd?",a:"11",cat:"quiz"},
+{q:"Které z následujících monster má level 32?",a:"Divoký poddaný",cat:"quiz"},
+{q:"Jaký druh rostliny se používá k výrobě kokainu?",a:"Koka",cat:"quiz"},
+{q:"Které z následujících měst má portál do druhé poloviny města vlevo dole?",a:"Ani jedno",cat:"quiz"},
+{q:"V kterém z následujících filmů se vyskytuje postava Sarah Connor?",a:"Terminátor",cat:"quiz"},
+{q:"Který z těchto elementů není součástí skupiny nerostných paliv?",a:"Lithium",cat:"quiz"},
+{q:"Kdo nebo co je Nemesis?",a:"Řecký bůh odplaty (pomsty)",cat:"quiz"},
+{q:"V které mapě se nachází památník Su?",a:"Opičí jeskyně",cat:"quiz"},
+{q:"Které z následujících příšer má level 62?",a:"Začarované Ledoviště",cat:"quiz"},
+{q:"Kde lze dropout Zlatá cihla?",a:"Saharská poušť",cat:"drop"},
+{q:"Která z následujících příšer má level 51?",a:"Tmavý Zaříkávač, Hadí lukostřelec, Pes útrapy",cat:"quiz"},
+{q:"Jakým jazykem se hovoří v zemi s nejvyšším počtem obyvatel?",a:"Mandarínština",cat:"quiz"},
+{q:"Jaký druh materiálu se používá pro výrobu vodíkových palivových článků?",a:"Platinové katalyzátory",cat:"quiz"},
+{q:"Co znamená slovo esej?",a:"Úvaha",cat:"quiz"},
+{q:"Jaké národnosti byl Josif V. Stalin?",a:"Gruzínec",cat:"quiz"},
+{q:"Co je údajně Svatý grál?",a:"Kalich Ježíše Krista",cat:"quiz"},
+{q:"Jak se jmenovala manželka britského zpěváka Johna Lennona?",a:"Yoko Ono",cat:"quiz"},
+{q:"Jaký je nejvyšší vrchol Evropy?",a:"Mont Blanc",cat:"quiz"},
+{q:"Jakou hodnotu přidává Kámen ochrany +5?",a:"(doplnit)",cat:"bonus"},
+{q:"Jakou hodnotu přidává Kámen ochrany +6?",a:"90",cat:"bonus"},
+{q:"Jakou hodnotu přidává Kámen ochrany +7?",a:"135",cat:"bonus"},
+{q:"Jakou hodnotu přidává Kámen ochrany +9?",a:"350",cat:"bonus"},
+{q:"Jakou hodnotu přidává Kámen nestvůr +5?",a:"12",cat:"bonus"},
+{q:"Jakou hodnotu přidává Kámen nestvůr +6?",a:"20",cat:"bonus"},
+{q:"Jakou hodnotu přidává Kámen nestvůr +8?",a:"25",cat:"bonus"},
+{q:"Jakou hodnotu přidává Kámen nestvůr +9?",a:"35",cat:"bonus"},
+{q:"Jaký je nejznámější román od Jane Austen?",a:"Pýcha a předsudek",cat:"quiz"},
+{q:"Kdo napsal slavnou knihu Pýcha a předsudek?",a:"Jane Austen",cat:"quiz"},
+{q:"Jaké napětí a kmitočet má páteřní síť v ČR?",a:"400 kV, 50 Hz",cat:"quiz"},
+{q:"Na kolik částí se dělí Chrám Hwang?",a:"6",cat:"quiz"},
+{q:"Které veličiny mají stejnou jednotku?",a:"Práce a energie",cat:"quiz"},
+{q:"V kterém oceánu/moři se nachází Kypr?",a:"Středozemní moře",cat:"quiz"},
+{q:"Která z následujících příšer nosí zelené kraťasy/tepláky?",a:"Zlý Joh-Hwan Bouře",cat:"quiz"},
+{q:"Kdo nazpíval píseň Poet and Pendulum?",a:"Nightwish",cat:"song"},
+{q:"V které mapě se nachází památník Seul-Rong?",a:"Údolí Orků",cat:"quiz"},
+{q:"Na kolik % je zastropován bonus silný proti charakterům na level 1-55?",a:"125%",cat:"bonus"},
+{q:"Na kolik % je zastropován bonus silný proti charakterům na levelu 56-89?",a:"165%",cat:"bonus"},
+{q:"Na kolik % je zastropován bonus silný proti charakterům na levelu 90-119?",a:"205%",cat:"bonus"},
+{q:"Na kolik % je zastropován bonus silný proti charakterům na levelu 120-149?",a:"235%",cat:"bonus"},
+{q:"Na kolik % je zastropován bonus silný proti charakterům na levelu 150+?",a:"250%",cat:"bonus"},
+{q:"Kolik kostí se nachází v lidském těle?",a:"206",cat:"quiz"},
+{q:"Který z následujících prvků má atomové číslo 7?",a:"Dusík",cat:"quiz"},
+{q:"Kde leží Tádž Mahal?",a:"Indie",cat:"quiz"},
+{q:"V kterém oceánu/moři se nachází Kréta?",a:"Středozemní moře",cat:"quiz"},
+{q:"Sloučení dvou molekul monomeru se jmenuje?",a:"Dimer",cat:"quiz"},
+{q:"Který z těchto druhů není součástí řádu plazů?",a:"Rak",cat:"quiz"},
+{q:"Na které světové straně má město Yongan moře?",a:"Jih",cat:"quiz"},
+{q:"Na které světové straně má město Joan moře?",a:"Západ",cat:"quiz"},
+{q:"Na které světové straně má město Pyungmoo moře?",a:"Východ",cat:"quiz"},
+{q:"Jaký level má příšera Zotročený bojový tygr?",a:"69",cat:"quiz"},
+{q:"Který z následujících amerických států se nenachází na východním pobřeží?",a:"Oregon",cat:"quiz"},
+{q:"V které mapě můžete nalézt monstrum jménem Pavoučky?",a:"Poušť",cat:"quiz"},
+{q:"Kdo nazpíval píseň Hollywood Hills?",a:"Sunrise Avenue",cat:"song"},
+{q:"Proti které postavě dává obranu Sokolský štít?",a:"Válečníkům",cat:"quiz"},
+{q:"Proti které postavě dává obranu Tygří štít?",a:"Ninjům",cat:"quiz"},
+{q:"Proti které postavě dává obranu Štít z dračích šupin?",a:"Šamanům",cat:"quiz"},
+{q:"Proti které postavě dává obranu Hranatý lví štít?",a:"Šurům",cat:"quiz"},
+{q:"Kolik yangů stojí u obchodníka s výstrojí brnění od levelu 1?",a:"3 000",cat:"quiz"},
+{q:"V které z následujících zemí se neplatí Eurem?",a:"Polsko, Dánsko, Švédsko, Maďarsko, Bulharsko, Rumunsko",cat:"quiz"},
+{q:"Které z následujících měst se nachází ve státě Washington?",a:"Seattle",cat:"quiz"},
+{q:"Který z následujících bossů používá palcát?",a:"DO",cat:"quiz"},
+{q:"Kolik se v Bakře nachází mostů?",a:"(doplnit)",cat:"quiz"},
+{q:"Jaký level má příšera Hrdý Tmavý Arahan?",a:"53",cat:"quiz"},
+{q:"Kolik se nachází osvícenských svitků v oblasti Joan?",a:"15",cat:"quiz"},
+{q:"Které z následujících monster má level 54?",a:"Pouštní Bandita, Tmavý Vůdce",cat:"quiz"},
+{q:"Kolik run se nachází ve hře (runy do bot, helem, štítů)?",a:"23",cat:"quiz"},
+{q:"Kolik se v Pyungmoo nachází mostů?",a:"(doplnit)",cat:"quiz"},
+{q:"Kolik se rovná cosinus 90 stupňů?",a:"0",cat:"quiz"},
+{q:"Jaká stromová alej se nachází v Jičíně?",a:"Lipová",cat:"quiz"},
+{q:"Které z následujících monster má level 87?",a:"Bojovník Setaou",cat:"quiz"},
+{q:"Hlavním městem Austrálie je?",a:"Canberra",cat:"quiz"},
+{q:"Který z těchto vynálezů není známý jako vynález Thomase Edisona?",a:"Automobil",cat:"quiz"},
+{q:"Kolik obličejů má na sobě Strom Duchů?",a:"12",cat:"quiz"},
+{q:"Kdo nazpíval píseň Running up that hill?",a:"Kate Bush",cat:"song"},
+{q:"Který z těchto prvků je nejvzácnějším prvkem na Zemi?",a:"Astat, Rhodium",cat:"quiz"},
+{q:"Které z těchto monster má level 36?",a:"Silný orčí zvěd, Divoký generál",cat:"quiz"},
+{q:"Který z následujících náhrdelníků je od levelu 22?",a:"Zlatý náhrdelník",cat:"quiz"},
+{q:"Ve kterém státě se platí Yangem?",a:"V žádném z nich",cat:"quiz"},
+{q:"Kolik necelých let válčila Marie Terezie o rakouské dědictví?",a:"8",cat:"quiz"},
+{q:"Který z následujících vitamínů je rozpustný v tuku?",a:"A",cat:"quiz"},
+{q:"Který z následujících bossů používá sekeru?",a:"Mahon",cat:"quiz"},
+{q:"Který z následujících náhrdelníků je od levelu 42?",a:"Z bílého zlata",cat:"quiz"},
+{q:"Kolik zubů má silný orčí generál?",a:"(doplnit)",cat:"quiz"},
+{q:"Která z následujících příšer má level 63?",a:"Ledová zabijácká velryba",cat:"quiz"},
+{q:"Které z následujících monster má level 97?",a:"Lemur válečník, Žraločí voják",cat:"quiz"},
+{q:"Ve které mapě se nachází Lee Chung?",a:"Chrám Hwang",cat:"quiz"},
+{q:"Jakým typem látky je terakota?",a:"Keramika",cat:"quiz"},
+{q:"V kterém z následujících filmů se vyskytuje James Bond?",a:"Casino Royale",cat:"quiz"},
+{q:"Který z následujících náhrdelníků je od levelu 28?",a:"Nefritový náhrdelník",cat:"quiz"},
+{q:"Jaký level má příšera Ohnivý válečník? / level 72?",a:"72 – Ohnivý válečník",cat:"quiz"},
+{q:"Jaký druh hudby vznikl na konci 19. století v USA?",a:"Jazz",cat:"quiz"},
+{q:"Ve které mapě se nachází Metin Marnosti?",a:"Nefritový Záliv",cat:"quiz"},
+{q:"Kolik se rovná sinus 0 stupňů?",a:"0",cat:"quiz"},
+{q:"Kolik se nachází osvícenských svitků v oblasti Bakra?",a:"17",cat:"quiz"},
+{q:"Tepelný děj, při něm nenastává tepelná výměna mezi plynem a okolím?",a:"Adiabatický",cat:"quiz"},
+{q:"Při jakém oceánu/moři se nachází Fidži?",a:"Tichý oceán",cat:"quiz"},
+{q:"Kolik se v Yonganu nachází mostů?",a:"10",cat:"quiz"},
+{q:"V kterém z následujících jazyků se používá cyrilice?",a:"Bulharština",cat:"quiz"},
+{q:"Kolik se nachází osvícenských svitků v oblasti Yongan?",a:"19",cat:"quiz"},
+{q:"V které kanadské provincii se nachází město Toronto?",a:"Ontario",cat:"quiz"},
+{q:"Jaký level má příšera Ledový Golem?",a:"66",cat:"quiz"},
+{q:"Ve které mapě se nachází Heuk-Young?",a:"1. města",cat:"quiz"},
+{q:"Jak se jmenoval první Evropan, který obeplul mys Dobré naděje?",a:"Bartolomeo Diaz",cat:"quiz"},
+{q:"Kolik zubů má Zlý lučistník bouře?",a:"16",cat:"quiz"},
+{q:"Který z následujících náhrdelníků je od levelu 46?",a:"Kryšťálový",cat:"quiz"},
+{q:"Jaký je nejvyšší vrchol Antarktidy?",a:"Vinson Massif",cat:"quiz"},
+{q:"Které z následujících monster má level 59?",a:"Vůdce útrapy, Vůdce Žabovojáků",cat:"quiz"},
+{q:"Jaký level má příšera Vrba duchů?",a:"70",cat:"quiz"},
+{q:"Co je frgál?",a:"Pečivo",cat:"quiz"},
+{q:"Které z následujících příšer nosí hnědé kraťasy/tepláky?",a:"Lučistník černého větru",cat:"quiz"},
+{q:"Kdo je autorem knihy Pán Prstenů?",a:"J.R.R. Tolkien",cat:"quiz"},
+{q:"Který z těchto měsíců je největším měsícem ve sluneční soustavě?",a:"Jupiter (Ganymedes)",cat:"quiz"},
+{q:"Které z následujících příšer nosí šedé kraťasy/tepláky?",a:"Voják černého větru",cat:"quiz"},
+{q:"Na kolik % je zastropován bonus Rychlost Kouzla?",a:"175%",cat:"bonus"},
+{q:"Z kolika world bossů lze dropnout rukavice?",a:"5",cat:"quiz"},
+{q:"Kdo byl autorem slavné knihy Don Quijote de la Mancha?",a:"Miguel de Cervantes",cat:"quiz"},
+{q:"Které z následujících monster má level 65?",a:"Ledový muž, Strom duchů",cat:"quiz"},
+{q:"Co umožňuje vedení elektrického proudu v plynech?",a:"Volné elektrony",cat:"quiz"},
+{q:"Které z následujících měst se nachází ve Finsku?",a:"Helsinki",cat:"quiz"},
+{q:"Který pivovar má motto 'ryzí pivo z hor'?",a:"Holba",cat:"quiz"},
+{q:"Která z následujících zemí má 2 hlavní města?",a:"Bolívie",cat:"quiz"},
+{q:"Která z následujících příšer má level 69?",a:"Dryáda, Duch plamenů",cat:"quiz"},
+{q:"Kde lze dropout Zlatá mince?",a:"Zlatá jeskyně",cat:"drop"},
+{q:"Které z následujících měst leží v Belgii?",a:"Antverpy",cat:"quiz"},
+{q:"Jaký druh reakce se používá při výrobě síranu amonného?",a:"Solvayova reakce",cat:"quiz"},
+{q:"Která z následujících příšer má level 49?",a:"Černý obří ork",cat:"quiz"},
+{q:"Jakým jazykem se hovoří v Egyptě?",a:"Arabština",cat:"quiz"},
+{q:"Které z následujících monster má level 40?",a:"Silný orčí šaman",cat:"quiz"},
+{q:"Které z následujících měst leží v Thajsku?",a:"Bangkok",cat:"quiz"},
+{q:"Kolik se nachází osvícenských svitků v oblasti Pyungmoo?",a:"17",cat:"quiz"},
+{q:"Která z následujících příšer má level 67?",a:"Pařez duchů",cat:"quiz"},
+{q:"V kterém americkém státě se nachází město Salt Lake City?",a:"Utah",cat:"quiz"},
+{q:"Který z těchto kontinentů není součástí superkontinentu Gondwana?",a:"Evropa",cat:"quiz"},
+{q:"Z kolika místností se skládá Jeskyně Vyhnanství 2?",a:"89",cat:"quiz"},
+{q:"Které z následujících měst se nachází ve státě Illinois?",a:"Chicago",cat:"quiz"},
+{q:"Čím se zabývá meteorologie?",a:"Počasím",cat:"quiz"},
+{q:"V jakých jednotkách se měří síla?",a:"Newton",cat:"quiz"},
+{q:"Který z těchto států není součástí Jižní Ameriky?",a:"Panama",cat:"quiz"},
+{q:"Z kolika ostrovů se skládá Údolí Orků?",a:"19",cat:"quiz"},
+{q:"Které z následujících monster má level 96?",a:"Tritoní muréna",cat:"quiz"},
+{q:"V které z těchto asijských zemí se používají červené registrační značky?",a:"Bhútán",cat:"quiz"},
+{q:"V jaké zemi byl vytvořen Metin2?",a:"Jižní Korea",cat:"quiz"},
+{q:"Kdo je autorem slavné knihy Robinson Crusoe?",a:"Daniel Defoe",cat:"quiz"},
+{q:"Kolik hlav má Vůdce útrapy?",a:"3",cat:"quiz"},
+{q:"Která mapa se skrývá pod názvem Hasun Dong?",a:"Opičí jeskyně I.",cat:"quiz"},
+{q:"Která mapa se skrývá pod názvem Jungsun Dong?",a:"Opičí jeskyně II.",cat:"quiz"},
+{q:"Která mapa se skrývá pod názvem Kuahlo Dong?",a:"Pavoučí jeskyně I.",cat:"quiz"},
+{q:"Kolik časových zón používá USA?",a:"6",cat:"quiz"},
+{q:"V které kanadské provincii se nachází město Winnipeg?",a:"Manitoba",cat:"quiz"},
+{q:"Který z těchto chemických prvků není součástí skupiny halogenů?",a:"Helium",cat:"quiz"},
+{q:"Z které země pochází psí plemeno čau-čau?",a:"Čína",cat:"quiz"},
+{q:"Kolik se v Yayangu nachází mostů?",a:"(doplnit)",cat:"quiz"},
+{q:"Který stát je největším světovým pěstitelem zeleniny?",a:"Čína",cat:"quiz"},
+{q:"Od jakého levelu lze začít dělat Osvícenství?",a:"50",cat:"quiz"},
+{q:"Kterému geometrickému útvaru se rovná logaritmická funkce?",a:"Hyperbola",cat:"quiz"},
+{q:"Kterému geometrickému útvaru se rovná lineární funkce?",a:"Přímka",cat:"quiz"},
+{q:"Které z následujících monster má level 35?",a:"Divoký lukostřelec",cat:"quiz"},
+{q:"V kterém roce vzniklo SSSR?",a:"1922",cat:"quiz"},
+{q:"Která z látek je vhodná pro permanentní magnet?",a:"Ocel",cat:"quiz"},
+{q:"Jak je přibližně dlouhý rovník Země?",a:"40 000 km",cat:"quiz"},
+{q:"Hlavní město Estonska je?",a:"Tallinn",cat:"quiz"},
+{q:"Jaký level má příšera Pařez Duchů?",a:"67",cat:"quiz"},
+{q:"Jakou přibližnou hodnotu má základ přirozeného logaritmu?",a:"2,718",cat:"quiz"},
+{q:"Který stát je největším světovým výrobcem automobilů?",a:"Čína",cat:"quiz"},
+{q:"Které z následujících monster má level 32?",a:"Divoký poddaný",cat:"quiz"},
+{q:"Na kolik % je zastropován bonus BZK?",a:"100%",cat:"bonus"},
+{q:"Která z následujících toček nelze získat těžbou?",a:"Začarovat kostým",cat:"quiz"},
+{q:"Jakou barvu je označeno polotučné mléko?",a:"Modrou",cat:"quiz"},
+{q:"Jakou barvu je označeno plnotučné mléko?",a:"Červenou",cat:"quiz"},
+{q:"Kde ležel sedmý div světa - Mauzoleum?",a:"V Halikarnassu",cat:"quiz"},
+{q:"Kdo byl prvním člověkem, který přistál na Marsu?",a:"Nikdo (dosud se nestalo)",cat:"quiz"},
+{q:"Která kapela nazpívala píseň Lonely Day?",a:"System of a Down",cat:"song"},
+{q:"Který přístroj vyrábí elektrický střídavý proud?",a:"Alternátor",cat:"quiz"},
+{q:"Kdo nazpíval píseň Should I Stay or Should I Go?",a:"The Clash",cat:"song"},
+{q:"Kolik yangů stojí u obchodníka s výstrojí brnění od levelu 9?",a:"5 000",cat:"quiz"},
+{q:"Kolik yangů stojí u obchodníka s výstrojí ametystové náušnice?",a:"16 000",cat:"quiz"},
+{q:"Jaký level má příšera Ledový muž?",a:"65",cat:"quiz"},
+{q:"Kolik pater má model věže démonů v Údolí Orků?",a:"13",cat:"quiz"},
+{q:"Kdo byl prvním člověkem, který dosáhl jižního pólu?",a:"Roald Amundsen",cat:"quiz"},
+{q:"Kolik je v městské oblasti Bakry strážních věží?",a:"8",cat:"quiz"},
+{q:"Boxerské povstání se uskutečnilo v?",a:"Číně",cat:"quiz"},
+{q:"Jaký level má příšera Brutální zaříkávač?",a:"57",cat:"quiz"},
+{q:"V kterém oceánu/moři se nachází Faerské ostrovy?",a:"Atlantický oceán",cat:"quiz"},
+{q:"Jaký level má příšera Plamen?",a:"71",cat:"quiz"},
+{q:"Kněžna v Delfské věštírně se jmenovala?",a:"Pýthie",cat:"quiz"},
+{q:"Které z následujících měst leží v Indonésii?",a:"Jakarta",cat:"quiz"},
+{q:"Která z následujících příšer nemá boty?",a:"Jak-To černého větru",cat:"quiz"},
+{q:"Které z následujících měst leží v Kambodži?",a:"Phnom Penh",cat:"quiz"},
+{q:"Která mapa se skrývá pod názvem Lungsam?",a:"Zelený les",cat:"quiz"},
+{q:"Kdo byl autorem knihy Faust?",a:"Johann Wolfgang von Goethe",cat:"quiz"},
+{q:"Kolik děl se nachází v Joanu?",a:"9",cat:"quiz"},
+{q:"Jakým jazykem se hovoří v Brazílii?",a:"Portugalsky",cat:"quiz"},
+{q:"Co zničilo v roce 79 Pompeje?",a:"Sopka (Vesuv)",cat:"quiz"},
+{q:"Co znamená minoritní dominanta?",a:"Menšinová převládající složka",cat:"quiz"},
+{q:"Kolik sekund má jeden den?",a:"86 400",cat:"quiz"},
+{q:"V kterém z následujících států se používají na krajnicích silnice žluté čáry místo bílých?",a:"Jihoafrická republika",cat:"quiz"},
+{q:"Za kolik yangů se dá u zbrojíře koupit Vodní vějíř?",a:"5 000",cat:"quiz"},
+{q:"Který francouzský král byl svržen ve francouzské revoluci?",a:"Ludvík XVI.",cat:"quiz"},
+{q:"Který z těchto filmů nebyl režírován Stevenem Spielbergem?",a:"Titanic",cat:"quiz"},
+{q:"Kolik časových zón používá Japonsko?",a:"1",cat:"quiz"},
+{q:"Kdo je autorem knihy Král Lear?",a:"William Shakespeare",cat:"quiz"},
+{q:"Kolik se v Bokjungu nachází mostů?",a:"(doplnit)",cat:"quiz"},
+{q:"V kterém státě se platí wonem?",a:"Jižní Korea",cat:"quiz"},
+{q:"Kolik je v Ledové zemi starých beden s papíry?",a:"2",cat:"quiz"},
+{q:"Který z těchto chemických prvků se používá pro výrobu skla?",a:"Křemík (Silicium)",cat:"quiz"},
+{q:"Jaký je nejvyšší vrchol Severní Ameriky?",a:"Denali",cat:"quiz"},
+{q:"Jaká barva je specifická pro koňskou medaili III?",a:"Zelená",cat:"quiz"},
+{q:"Jaká barva je specifická pro koňskou medaili IV?",a:"Žlutá",cat:"quiz"},
+{q:"Jaká barva je specifická pro koňskou medaili II?",a:"Fialová",cat:"quiz"},
+{q:"Jaká barva je specifická pro koňskou medaili I?",a:"Červená",cat:"quiz"},
+{q:"Které z následujících měst leží v Turecku?",a:"Ankara",cat:"quiz"},
+{q:"Které látky jsou nejvíce stlačitelné?",a:"Plynné",cat:"quiz"},
+{q:"Které z následujících monster má level 89?",a:"Duchovní Setaou",cat:"quiz"},
+{q:"Kdo byl prvním Američanem ve vesmíru?",a:"Alan Shepard",cat:"quiz"},
+{q:"Kolik tisíc druhů enzymů se nachází ve zdravém lidském těle?",a:"(doplnit)",cat:"quiz"},
+{q:"Kolik políček má celkově inventář na alchymii?",a:"384",cat:"quiz"},
+{q:"Které z následujících měst má portál do druhé poloviny města vlevo nahoře?",a:"Pyungmoo",cat:"quiz"},
+{q:"Od jaké úrovně osvícenství lze nosit osvícené runy?",a:"(doplnit)",cat:"quiz"},
+{q:"Kolik map (ne dungeonů) je na Stellarii?",a:"37",cat:"quiz"},
+{q:"Kolik DM dostanu v případě, že prodám postavu na Hero Marketu za 1100 DM?",a:"1000 DM",cat:"quiz"},
+{q:"Tepelný děj, při kterém se nemění tlak, se nazývá?",a:"Izobarický",cat:"quiz"},
+{q:"Která z následujících planet je složena převážně z plynů?",a:"Saturn",cat:"quiz"},
+{q:"Kolik časových zón používá Anglie?",a:"1",cat:"quiz"},
+{q:"V které mapě se nachází Metin Zlomyslnosti?",a:"Útes Gautama",cat:"quiz"},
+{q:"Jaká je šance na vycraftění starověkého Cor Draconis u alchymisty?",a:"(doplnit)",cat:"quiz"},
+{q:"Kolik procent má Mytická alchymie silný proti ledu?",a:"18%",cat:"quiz"},
+{q:"Jaká daň je strhnutá při prodeji postavy z Hero Marketu za 800 DM?",a:"100 DM",cat:"quiz"},
+{q:"Které z následujících monster má level 30?",a:"Jak-To černého větru, Zlý Joh-Hwan Bouře",cat:"quiz"},
+{q:"Kolik časových zón používá Rusko?",a:"11",cat:"quiz"},
+{q:"Zimní olympiáda se koná jednou za?",a:"4 roky",cat:"quiz"},
+{q:"Jaký level má příšera Hrdý tmavý fanatik?",a:"(doplnit)",cat:"quiz"},
+{q:"Kolik stojí u obchodníka s výzbrojí brnění od levelu 18?",a:"8 000",cat:"quiz"},
+{q:"Za kolik yangů se dá u zbrojíře koupit Armáda?",a:"400",cat:"quiz"},
+{q:"Do kolika map (ne dungeonů) máte přístup na Stellarii na levelu 90?",a:"25",cat:"quiz"},
+{q:"V které mapě můžete nalézt monstrum jménem Malý jedovatý pavouk?",a:"Pavoučí jeskyně II.",cat:"quiz"},
+{q:"Kolik lze mít maximálně Silný proti elementu v Mytické excelentní alchymii?",a:"18%",cat:"quiz"},
+{q:"Kolik je týdně PvP eventů pro kategorie 170+?",a:"(doplnit)",cat:"quiz"},
+{q:"Který z těchto chemických prvků patří do skupiny přechodných kovů?",a:"Chrom",cat:"quiz"},
+{q:"Na kolik % je zastropován bonus odolnost proti charakterům na levelu 170+?",a:"85%",cat:"bonus"},
+{q:"Od jakého opasku je možnost mít 5 točitelných bonusů?",a:"Opasek Stínů",cat:"quiz"},
+{q:"V které mapě můžete nalézt monstrum jménem Brutální jed. pavoučky?",a:"Pavoučí jeskyně III.",cat:"quiz"},
+{q:"V které mapě se nachází Metin Lesů?",a:"Zelené údolí",cat:"quiz"},
+{q:"Jaká daň je strhnutá při prodeji postavy z Hero Marketu za 300 DM?",a:"100 DM",cat:"quiz"},
+{q:"Rostlinný či živočišný kříženec se nazývá?",a:"Hybrid",cat:"quiz"},
+{q:"Který z následujících není ostrovem Japonska?",a:"Hiroshima",cat:"quiz"},
+{q:"V kterém z následujících filmů se vyskytuje postava John Rambo?",a:"Poslední Krev",cat:"quiz"},
+{q:"Které z následujících měst se nachází v Chile?",a:"Concepción",cat:"quiz"},
+{q:"Které z následujících měst leží ve Vietnamu?",a:"Hanoj",cat:"quiz"},
+{q:"Z kolika hvězd se skládá Souhvězdí Velký vůz?",a:"7",cat:"quiz"},
+{q:"Jaký druh krystalické mřížky má diamant?",a:"Kubická krystalická mřížka",cat:"quiz"},
+{q:"Který slavný fyzik definoval tři zákony pohybu a gravitační zákon?",a:"Isaac Newton",cat:"quiz"},
+{q:"Kolik stupňů má součet vnitřních úhlů v trojúhelníku?",a:"180°",cat:"quiz"},
+{q:"Která z následujících oblastí patří Velké Británii?",a:"Jersey",cat:"quiz"},
+{q:"Které z následujících měst se nachází v Peru?",a:"Lima",cat:"quiz"},
+{q:"V které zemi se nachází nejvíce jeskyní?",a:"USA",cat:"quiz"},
+{q:"Které z následujících měst se nachází v Kolumbii?",a:"Cali",cat:"quiz"},
+{q:"Které z následujících monster má level 76?",a:"Červený pařez duchů",cat:"quiz"},
+{q:"Která z následujících oblastí se nachází v Kanadě?",a:"Yukon",cat:"quiz"},
+{q:"Která z následujících oblastí se nachází v Brazílii?",a:"Minas Gerais",cat:"quiz"},
+{q:"Která z následujících oblastí se nachází v Argentině?",a:"Mendoza",cat:"quiz"},
+{q:"Jak se nazývá největší planeta sluneční soustavy?",a:"Jupiter",cat:"quiz"},
+{q:"Kolik ras monster se vyskytuje na Stellarii?",a:"6",cat:"quiz"},
+{q:"Která část lidského mozku je zodpovědná za koordinaci pohybu?",a:"Cerebellum (mozeček)",cat:"quiz"},
+{q:"Který prvek je rozšířenější v zemské kůře?",a:"Kyslík",cat:"quiz"},
+{q:"Který z následujících zemí se nenachází v Africe?",a:"Mauricius, Tonga, Jamajka, Kuvajt, Timor, Barma",cat:"quiz"},
+{q:"Na jakou nejvyšší úroveň lze vylepšit Legendární bezchybnou alchymii?",a:"+4",cat:"quiz"},
+{q:"Přibližně v kolika státech se mluví španělsky?",a:"20",cat:"quiz"},
+{q:"Kdo byl prvním československým premiérem?",a:"Karel Kramář",cat:"quiz"},
+{q:"Které z následujících měst se nachází v Paraguay?",a:"Asunción",cat:"quiz"},
+{q:"Kolik dokončených dungeonů je potřeba na titul Adventurer?",a:"2 000",cat:"quiz"},
+{q:"V které zemi se nachází nejvíce jezer?",a:"Kanada",cat:"quiz"},
+{q:"Který planetární systém je nejbližší Zemi?",a:"Alfa Centauri",cat:"quiz"},
+{q:"Která z následujících oblastí patří Španělsku?",a:"Kanárské ostrovy",cat:"quiz"},
+{q:"Která planeta ve sluneční soustavě má největší teplotní extrémy?",a:"Venuše",cat:"quiz"},
+{q:"Které z následujících monster má level 64?",a:"Ledový hmyz",cat:"quiz"},
+{q:"Jaký je chemický vzorec vody?",a:"H₂O",cat:"quiz"},
+{q:"Na kolik % je zastropován bonus odolnost proti charakterům na level 120-169?",a:"85%",cat:"bonus"},
+{q:"Která z následujících oblastí patří Řecku?",a:"Kréta",cat:"quiz"},
+{q:"Která z následujících oblastí se nachází v Mexiku?",a:"Baja California",cat:"quiz"},
+{q:"V které zemi se nachází nejvyšší hora (podle nadmořské výšky)?",a:"Nepál",cat:"quiz"},
+{q:"Které z následujících měst se nachází ve Švédsku?",a:"Stockholm",cat:"quiz"},
+{q:"Jaká je % šance na předělání Zlodějských rukavic na prsten zkušenosti u Konfucia?",a:"100%",cat:"quiz"},
+{q:"V jakých letech proběhla 2. světová válka?",a:"1939–1945",cat:"quiz"},
+{q:"Které z následujících monster má level 34?",a:"Silný ork",cat:"quiz"},
+{q:"Která z následujících oblastí se nachází ve Spojených Státech?",a:"Iowa",cat:"quiz"},
+{q:"Kolik přibližně ostrovů patří Řecku?",a:"6 000",cat:"quiz"},
+{q:"Ve kterém roce došlo k útoku na New York?",a:"2001",cat:"quiz"},
+{q:"Kolik osvícenských misí jde denně maximálně splnit?",a:"(doplnit)",cat:"quiz"},
+{q:"V kterém americkém státě se nachází město San Francisco?",a:"Kalifornie",cat:"quiz"},
+{q:"Jaká je % šance na udělání lepších (modrých) kostí u Konfucia?",a:"30%",cat:"quiz"},
+{q:"Kolik titulů lze získat z PvP eventů?",a:"16",cat:"quiz"},
+{q:"Jaká je šance na obranu proti postavě v Mytickém excelentním safíru +6?",a:"15%",cat:"quiz"},
+{q:"Jaké město je 3. největší s počtem obyvatel v ČR?",a:"Ostrava",cat:"quiz"},
+{q:"V kterém oceánu/moři se nachází Havaj?",a:"Tichý oceán",cat:"quiz"},
+{q:"Jaký je maximální stupeň dračí alchymie?",a:"Mytická Excelentní",cat:"quiz"},
+{q:"Jsou některé části Bible přejaty z Židovství?",a:"Ano, některé části Starého zákona",cat:"quiz"},
+{q:"Jakým jazykem se hovoří v Austrálii?",a:"Angličtina",cat:"quiz"},
+{q:"Která z následujících oblastí patří Francii?",a:"Korsika",cat:"quiz"},
+{q:"Které z následujících měst se nachází v Bolívii?",a:"Santa Cruz",cat:"quiz"},
+{q:"Ve které zemi se nachází největší džungle?",a:"Brazílie",cat:"quiz"},
+{q:"V kterém americkém státě se nachází město Seattle?",a:"Washington",cat:"quiz"},
+{q:"Která z následujících oblastí patří Itálii?",a:"Sardinie",cat:"quiz"},
+{q:"V kterém americkém státě se nachází město Las Vegas?",a:"Nevada",cat:"quiz"},
+{q:"V kterém americkém státě se nachází město Albuquerque?",a:"Nové Mexiko",cat:"quiz"},
+{q:"Který z těchto chemických prvků je součástí/patří do skupiny halogenů?",a:"Chlor",cat:"quiz"},
+{q:"Které z následujících měst leží v Rumunsku?",a:"Bukurešť",cat:"quiz"},
+{q:"Který z následujících prvků má atomové číslo 2?",a:"Helium",cat:"quiz"},
+{q:"Který z následujících prvků má atomové číslo 1?",a:"Vodík",cat:"quiz"},
+{q:"Který z následujících prvků má atomové číslo 6?",a:"Uhlík",cat:"quiz"},
+{q:"Kolik políček místa má celkově inventář?",a:"720",cat:"quiz"},
+{q:"Který z následujících ostrovů je součástí Indonésie?",a:"Java",cat:"quiz"},
+{q:"Jaký bonus přidává Kapr?",a:"Silný proti zvířatům",cat:"bonus"},
+{q:"Který z následujících bossů používá hák?",a:"Brutální Velitel",cat:"quiz"},
+{q:"Kolik stupňů je součet vnitřních úhlů pravidelného pětiúhelníku?",a:"540°",cat:"quiz"},
+{q:"Které z těchto měst se nachází ve Španělsku?",a:"Granada, Valencia",cat:"quiz"},
+{q:"Který z těchto elementů není součástí skupiny plynných kovů?",a:"Helium",cat:"quiz"},
+{q:"Jaký druh ryby je nejčastěji použit v sushi?",a:"Losos",cat:"quiz"},
+{q:"V kterém americkém státě se nachází město Albuquerque?",a:"Nové Mexiko",cat:"quiz"},
+{q:"V kterém oceánu/moři se nachází Kanárské ostrovy?",a:"Atlantický oceán",cat:"quiz"},
+{q:"Od kterého zvířete je odvozený název Kanárských ostrovů?",a:"Pes",cat:"quiz"},
+{q:"Jaký je nejvyšší vrchol Asie?",a:"Mount Everest",cat:"quiz"},
+{q:"Jaký druh papouška lze najít v Amazonii?",a:"Papoušek amazonský",cat:"quiz"},
+{q:"Které z následujících monster má level 61?",a:"Generál obří ropucha",cat:"quiz"},
+{q:"Idea o sjednocování všech slovanských národů je označována jako?",a:"Panslavismus",cat:"quiz"},
+{q:"Které z následujících monster má level 29?",a:"Divoký pěšák",cat:"quiz"},
+{q:"Pro který tým F1 jezdí finský pilot Mika Häkkinen?",a:"McLaren-Mercedes",cat:"quiz"},
+{q:"Kolik bodlin má Bo na svém palcátu?",a:"(doplnit)",cat:"quiz"},
+{q:"Kolik má pacholek v ohrádce koní?",a:"(doplnit)",cat:"quiz"},
+{q:"Který z následujících prutů je nejdražší?",a:"Prut Achátu",cat:"quiz"},
+{q:"Která nazpívala píseň Master of Puppets?",a:"Metallica",cat:"song"},
+{q:"Který stát je největším světovým výrobcem koksu?",a:"USA",cat:"quiz"},
+{q:"V jakém oceánu/moři se nachází Portoriko?",a:"Atlantský oceán / Karibské moře",cat:"quiz"},
+{q:"Který z následujících měst leží v Srbsku?",a:"Bělehrad",cat:"quiz"},
+{q:"Který z těchto filmů získal jako první Oscara za nejlepší film?",a:"Wings",cat:"quiz"},
+{q:"Jakou jednotku má elektrický náboj?",a:"Coulomb (C)",cat:"quiz"},
+{q:"Které z následujících monster má level 83?",a:"Podzemní ledový muž",cat:"quiz"},
+{q:"Polybazit je?",a:"Stříbrná ruda",cat:"quiz"},
+{q:"Které z těchto měst má nejvíce rybářů?",a:"Yongan",cat:"quiz"},
+{q:"Jaký je vědecký název pro proces, kdy se atom rozpadá na jednodušší prvky?",a:"Radioaktivita",cat:"quiz"},
+{q:"Ve které mapě se nachází Chuk-Sal?",a:"Pavoučí jeskyně I.",cat:"quiz"},
+{q:"Které z následujících monster má level 98?",a:"Tritoní Kouzelník, Lemurí Voják",cat:"quiz"},
+{q:"Jaký level má příšera Ledový hmyz?",a:"64",cat:"quiz"},
+{q:"Která kapela nazpívala píseň Shoot to Thrill?",a:"AC/DC",cat:"song"},
+{q:"Jaká je šance na vycraftění legendárního Cor Draconis u alchymisty?",a:"85%",cat:"quiz"},
+{q:"Který stát je největším světovým výrobcem ropy?",a:"Saúdská Arábie",cat:"quiz"},
+{q:"Za kolik yangů se dá u zbrojíře koupit Orchideomec, Válečná vidlice, Nůž Štěstí?",a:"8 000",cat:"quiz"},
+{q:"Jak se jmenuje Simbův otec z filmu Lví král?",a:"Mufasa",cat:"quiz"},
+{q:"Ve kterém roce se rozdělilo Československo?",a:"1993",cat:"quiz"},
+{q:"Který z následujících elementů obsahuje nejvíce příšer?",a:"Vítr",cat:"quiz"},
+{q:"V které mapě se nachází památník Gum?",a:"Chrám Hwang",cat:"quiz"},
+{q:"Které z následujících monster má level 82?",a:"Červený zlý strom",cat:"quiz"},
+{q:"Kdo nazpíval píseň Werewolves of London?",a:"Warren Zevon",cat:"song"},
+{q:"V které mapě se nachází Metin Záru?",a:"Nefritový Záliv",cat:"quiz"},
+{q:"Které z těchto monster nemá tetování?",a:"Divoký Pěšák",cat:"quiz"},
+{q:"Jaký bonus přidává Okoun?",a:"Inteligence",cat:"bonus"},
+{q:"Jaký bonus přidává Sumec?",a:"Silný proti větru",cat:"bonus"},
+{q:"Jaký bonus přidává Lotosová Ryba?",a:"Silný proti ohni",cat:"bonus"},
+{q:"Jaký bonus přidává Ayu?",a:"Silný proti ledu",cat:"bonus"},
+{q:"Jaký bonus přidává Koruška?",a:"Silný proti temnotě",cat:"bonus"},
+{q:"Jaký bonus přidává Zlatá rybka?",a:"Silný proti blesku",cat:"bonus"},
+{q:"Kde lze dropout Vysušená hlava?",a:"Věž Démonů",cat:"drop"},
+{q:"Kde lze dropout Piktogram?",a:"Ďáblovy katakomby",cat:"drop"},
+{q:"Kde lze dropout Modrý drahokam?",a:"Příroda",cat:"drop"},
+{q:"Kde lze dropout Část trollího kamene?",a:"Jeskyně Trollů",cat:"drop"},
+{q:"Kde lze dropout Kniha Kouzel?",a:"Síň Moudrosti",cat:"drop"},
+{q:"Kde lze dropout Krev zlatého draka, Zlatá mince, Zlatá truhla?",a:"Zlatá jeskyně",cat:"drop"},
+{q:"Kde lze dropout Jed pavoučí královny?",a:"Pavoučí Baronka",cat:"drop"},
+{q:"Kolik zubů má silný orčí bojovník?",a:"(doplnit)",cat:"quiz"},
+{q:"Kolik je na Stellarii map?",a:"37",cat:"quiz"},
+{q:"Jaký bonus přidává Perlín Ostrobřichý?",a:"Síla",cat:"bonus"},
+{q:"Kdo nazpíval píseň Wasted Years?",a:"Iron Maiden",cat:"song"},
+{q:"Kdo nazpíval píseň Kiss my Ashes?",a:"Woods of Ypres",cat:"song"},
+{q:"Kdo nazpíval píseň Thunderstruck?",a:"AC/DC",cat:"song"},
+{q:"Kdo nazpíval píseň Enter Sandman?",a:"Metallica",cat:"song"},
+{q:"Na kolik % je zastropován bonus Rychlost pohybu?",a:"220%",cat:"bonus"},
+{q:"Na kolik % je zastropován bonus Odolnost proti magii?",a:"90%",cat:"bonus"},
+{q:"Na kolik % je zastropován bonus Drop Bonus?",a:"100%",cat:"bonus"},
+{q:"Kolik přibližně ostrovů patří Švédsku?",a:"267 000",cat:"quiz"},
+{q:"V kterém americkém státě se nachází město Boston?",a:"Massachusetts",cat:"quiz"},
+{q:"Jakým jazykem se hovoří v Indii?",a:"Hindština",cat:"quiz"},
+{q:"Jaké jsou nejvyšší vodopády?",a:"Tugela Falls",cat:"quiz"},
+{q:"Které z následujících měst se nachází v Itálii?",a:"Palermo, Verona",cat:"quiz"},
+{q:"Jakým přístrojem se měří napětí?",a:"Voltmetr",cat:"quiz"},
+{q:"Jaký druh buněčné respirační cesty používají houbovité organismy?",a:"Aerobní respirační cesta",cat:"quiz"},
+{q:"Které z následujících zvířat zabije v Austrálii nejvíce lidí?",a:"Koně",cat:"quiz"},
+{q:"Kde byl vynalezen papír?",a:"V Číně",cat:"quiz"},
+{q:"Která část těla ovlivňuje tvorbu potu?",a:"Hypothalamus",cat:"quiz"},
+{q:"Které z následujících monster má level 33?",a:"To-Su Černého větru, Zlý Kyuk-Jang Bouře, Posedlý černou bouří, Orčí šaman",cat:"quiz"},
+{q:"Kolik místností má Pavoučí jeskyně 2?",a:"27",cat:"quiz"},
+{q:"Které z následujících monster má level 26?",a:"Voják černého větru",cat:"quiz"},
+{q:"Které z následujících monster má level 47?",a:"Štíří lukostřelec",cat:"quiz"},
+{q:"Kolik stojí měděné náušnice + zlaté náušnice?",a:"2 500",cat:"quiz"},
+{q:"Původní název New Yorku byl?",a:"New Amsterdam",cat:"quiz"},
+{q:"Od jaké úrovně osvícenství lze osvítit serpa?",a:"10",cat:"quiz"},
+{q:"Který z následujících měst se nachází v Norsku?",a:"Oslo",cat:"quiz"},
+{q:"Který orgán lidského těla filtruje a čistí krev?",a:"Ledviny",cat:"quiz"},
+{q:"Kolik je v České republice krajských měst?",a:"13",cat:"quiz"},
+{q:"Kolik kyslíku přibližně produkuje amazonská džungle?",a:"20%",cat:"quiz"},
+{q:"Které z následujících monster má level 80?",a:"Červená vrba duchů",cat:"quiz"},
+{q:"Které z následujících měst leží ve Francii?",a:"Marseille, Lyon",cat:"quiz"},
+{q:"Která kapela nazpívala píseň Duality?",a:"Slipknot",cat:"song"},
+{q:"Ra (Re) je egyptský bůh čeho?",a:"Slunce",cat:"quiz"},
+{q:"Na kolik % je zastropován bonus odolnost proti charakterům na levelu 1-55?",a:"60%",cat:"bonus"},
+{q:"Kolik existuje na Stellarii druhů použitelných grilovaných ryb?",a:"17",cat:"quiz"},
+{q:"Kolik Začarovat předmět je potřeba na udělání Začarovat talisman 1 u Konfucia?",a:"100",cat:"quiz"},
+{q:"Jaký z následujícího drop nepadá z World Bossů?",a:"Začarovat Zvíře",cat:"quiz"},
+{q:"Za kolik yangů se dá u zbrojíře koupit Roubovaný měděný luk?",a:"8 000",cat:"quiz"},
+{q:"Kolik druhů bossů se nachází v Útes Gautama?",a:"(doplnit)",cat:"quiz"},
+{q:"V které kanadské provincii se nachází město Montreal?",a:"Quebec",cat:"quiz"},
+{q:"Kolik druhů horních bonusů (1-5) lze točit v PvP brnění od 89?",a:"15",cat:"quiz"},
+{q:"Který z těchto prvků je nejlehčí?",a:"Helium",cat:"quiz"},
+{q:"V kterém oceánu/moři se nachází Srí Lanka?",a:"Indický oceán",cat:"quiz"},
+{q:"Které z následujících měst má portál do druhé poloviny města vpravo dole?",a:"(doplnit)",cat:"quiz"},
+{q:"Který z následujících náhrdelníků je od levelu 33?",a:"Ebenový náhrdelník",cat:"quiz"},
+{q:"Kolik metrů přibližně měří Mount Everest?",a:"8 848 m",cat:"quiz"},
+{q:"V kterém z následujících filmů hrál Indiana Jones?",a:"Dobyvatel ztracené Archy",cat:"quiz"},
+{q:"Které z následujících měst se nachází v Portugalsku?",a:"Porto",cat:"quiz"},
+{q:"Kolik je týdně PvP eventů pro kategorie 56-89?",a:"(doplnit)",cat:"quiz"},
+{q:"Kolik cm na šířku měří tenisový kurt při čtyřhře?",a:"1097 cm",cat:"quiz"},
+{q:"Attila byl vůdce?",a:"Hunů",cat:"quiz"},
+{q:"Kolik DM dostanu v případě, že prodám postavu na Hero Marketu za 150 DM?",a:"50 DM",cat:"quiz"},
+{q:"Jaký level má příšera Brutální Popravčí?",a:"55",cat:"quiz"},
+{q:"Kolik ostrovů patří Americe?",a:"28 000",cat:"quiz"},
+{q:"V které mapě se nachází Dračí Vejce?",a:"Zelené Údolí",cat:"quiz"},
+{q:"V které zemi se nachází nejvíce lesů?",a:"Rusko",cat:"quiz"},
+{q:"Které z následujících monster má level 84?",a:"Podzemní Yeti, Obrovský strom duchů",cat:"quiz"},
+{q:"Kolik stojí PvP bodů Elixír u správce bitev?",a:"(doplnit)",cat:"quiz"},
+{q:"Který z následujících vědeckých objevů byl proveden v české zemi?",a:"X-ray",cat:"quiz"},
+{q:"Které z následujících monster má level 27?",a:"Posedlý černým větrem",cat:"quiz"},
+{q:"Jaký druh krystalické mřížky má zlato?",a:"Kubická",cat:"quiz"},
+{q:"Který z následujících prvků se používá jako katalyzátor v automobilovém průmyslu?",a:"Palladium",cat:"quiz"},
+{q:"Jaká je šance na obranu proti postavě v Mytickém excelentním safíru +4?",a:"11%",cat:"quiz"},
+{q:"Kde se nachází nejvíce pyramid na světě?",a:"Súdán",cat:"quiz"},
+{q:"Kolik šípů má v toulci lučistnice bílé přísahy?",a:"(doplnit)",cat:"quiz"},
+{q:"Které z následujících monster má level 74?",a:"Červený strom duchů",cat:"quiz"},
+{q:"Jaký druh kávy se pěstuje nejvíce na světě?",a:"Robusta",cat:"quiz"},
+{q:"Jaké je hlavní město Kanady?",a:"Ottawa",cat:"quiz"},
+{q:"Který z následujících druhů ryb patří mezi největší kostnaté ryby?",a:"Manta",cat:"quiz"},
+{q:"Jaký druh paliva se používá v letadlech?",a:"Letecký petrolej",cat:"quiz"},
+{q:"Kolik druhů dolních bonusů (6-7) lze točit do věcí?",a:"20",cat:"quiz"},
+{q:"Z kolika místností se skládá Jeskyně Vyhnanství 1?",a:"80",cat:"quiz"},
+{q:"Které město se nenachází v Brazílii?",a:"Santiago de Chile",cat:"quiz"},
+{q:"Co je Mléčná Dráha?",a:"Galaxie",cat:"quiz"},
+{q:"Které z následujících měst leží v Egyptě?",a:"Káhira",cat:"quiz"},
+{q:"Který z následujících vynálezů byl prvním zdrojem elektrické energie?",a:"Dynamo",cat:"quiz"},
+{q:"Který z následujících vynálezců je známý pro svůj vynález telegrafu?",a:"Samuel Morse",cat:"quiz"},
+{q:"Kolik pater má cechovní dungeon Atlantida?",a:"(doplnit)",cat:"quiz"},
+{q:"V které zemi se nachází město, které leží naráz ve 2 kontinentech?",a:"Turecko",cat:"quiz"},
+{q:"Jaká je % šance na vytvoření Začarovat Runy u Deokbae?",a:"30%",cat:"quiz"},
+{q:"Jaká je značka jednotky frekvence?",a:"Hz",cat:"quiz"},
+{q:"Jaký level má příšera Jedovatý pavouk?",a:"45",cat:"quiz"},
+{q:"Kolik lodí se nachází podél západní pláže Joanu?",a:"(doplnit)",cat:"quiz"},
+{q:"Jaký level má příšera Brutální plukovník Arahan?",a:"54",cat:"quiz"},
+{q:"Jaký druh reakce se používá při výrobě kyseliny octové?",a:"Fermentace",cat:"quiz"},
+{q:"Který historický událost byl klíčovým momentem vzniku moderního státu Izrael?",a:"Izraelsko-arabský konflikt 1948",cat:"quiz"},
+{q:"Které z následujících monster má level 73?",a:"Hnusná létající lebka",cat:"quiz"},
+{q:"Které z následujících monster má level 58?",a:"Lukostřelec útrapy, Oštěpař útrapy, Zloduch",cat:"quiz"},
+{q:"Které z následujících monster má level 100?",a:"Lemurí popravčí",cat:"quiz"},
+{q:"Kolik časových zón používá Čína?",a:"1",cat:"quiz"},
+{q:"Kolik yangů stojí u obchodníka s výstrojí brnění od levelu 26?",a:"12 000",cat:"quiz"},
+{q:"V které kanadské provincii se nachází město Edmonton?",a:"Alberta",cat:"quiz"},
+{q:"Kolik je potřeba yangů na vykování jedné lávové věci z +0 na +9 bez překovů?",a:"49,5B",cat:"quiz"},
+{q:"Které zemi patří Grónsko?",a:"Dánsko",cat:"quiz"},
+{q:"Kolik se nachází svitků v oblasti Bokjung?",a:"19",cat:"quiz"},
+{q:"V kterém z následujících filmů se vyskytuje postava Ethan Hunt?",a:"Mission Impossible",cat:"quiz"},
+{q:"Které z následujících monster má level 77?",a:"Červená Dryáda",cat:"quiz"},
+{q:"Kolik je v České republice krajů?",a:"14",cat:"quiz"},
+{q:"Na kolika místech se spawnují bossové v Chrámu Hwang?",a:"(doplnit)",cat:"quiz"},
+{q:"Kolik se v Údolí Orků nachází mostů?",a:"23",cat:"quiz"},
+{q:"Jaký je maximální level cechu?",a:"245",cat:"quiz"},
+{q:"Na kolik % je zastropován bonus silný proti charakterům na levelu 1-89?",a:"165%",cat:"bonus"},
+{q:"V kterém americkém státě se nachází město Minneapolis?",a:"Minnesota",cat:"quiz"},
+{q:"Kolik provincií má Kanada?",a:"10",cat:"quiz"},
+{q:"Které z následujících monster má level 101?",a:"Tritoní Sekáč, Lemurí Generál",cat:"quiz"},
+{q:"Jakým jazykem se hovoří v Portoriku?",a:"Španělsky",cat:"quiz"},
+{q:"Kterou vlastnost mají kapaliny a plyny společnou?",a:"Tekutost",cat:"quiz"},
+{q:"Na kolik % je zastropován bonus odolnost proti charakterům na levelu 56-89?",a:"70%",cat:"bonus"},
+{q:"Která řeka protéká městem Paříž?",a:"Seina",cat:"quiz"},
+{q:"Na kolik % je zastropován bonus odolnost proti charakterům na levelu 90-119?",a:"80%",cat:"bonus"},
+{q:"Na kolik % je zastropován bonus odolnost proti charakterům na levelu 120-149?",a:"85%",cat:"bonus"},
+{q:"Na kolik % je zastropován bonus odolnost proti charakterům na levelu 150+?",a:"85%",cat:"bonus"},
+{q:"Kdo byl prvním člověkem, který absolvoval celosvětovou cestu letadlem?",a:"Charles Lindbergh",cat:"quiz"},
+{q:"V kterém americkém státě se nachází město Houston?",a:"Texas",cat:"quiz"},
+{q:"Které z následujících příšer má level 75?",a:"Žlutý duch tygra",cat:"quiz"},
+{q:"Které z následujících příšer má level 48?",a:"Vysoký Popravčí, Tmavý popravčí, Hadí bojovník s mečem, Zlý červený jedovatý pavouk",cat:"quiz"},
+{q:"Jakým jazykem se hovoří v Taiwanu?",a:"Čínsky (mandarínština)",cat:"quiz"},
+{q:"Jaký stát je největším světovým pěstitelem pšenice?",a:"Čína",cat:"quiz"},
+{q:"Které z následujících měst se nachází ve státě Florida?",a:"Miami",cat:"quiz"},
+{q:"Který z těchto chemických prvků se používá pro výrobu jaderného paliva?",a:"Uran",cat:"quiz"},
+{q:"Kolik let bylo Stallonemu když se objevil ve filmu Rambo: Do pekla a zpět?",a:"62",cat:"quiz"},
+{q:"Do kolika dungeonů máte přístup na Stellarii na levelu 175?",a:"5",cat:"quiz"},
+{q:"Kolik políček místa má celkově sklad?",a:"135",cat:"quiz"},
+{q:"Jaký byl první operační systém, který byl vytvořen pro počítač?",a:"UNIX",cat:"quiz"},
+{q:"Jak se nazývá hlavní město Číny?",a:"Peking",cat:"quiz"},
+{q:"Kolik přibližně ostrovů patří Japonsku?",a:"120 000",cat:"quiz"},
+{q:"Jaký level má Létající pouštní oko?",a:"37",cat:"quiz"},
+{q:"Jak vysoké jsou Niagarské vodopády?",a:"51 m",cat:"quiz"},
+{q:"Jak se jmenoval první komerčně úspěšný počítač?",a:"UNIVAC I",cat:"quiz"},
+{q:"Která z následujících příšer má level 46?",a:"Černý ork",cat:"quiz"},
+{q:"Kdo je autorem knihy Odyssea?",a:"Homér",cat:"quiz"},
+{q:"Kolik je v městské oblasti Bokjung strážních věží?",a:"(doplnit)",cat:"quiz"},
+{q:"Ve kterém století objevil Kryštof Kolumbus Ameriku?",a:"V 15. století",cat:"quiz"},
+{q:"Které z následujících monster má level 85?",a:"Podzemní Ledový Golem",cat:"quiz"},
+{q:"Kolik ostrovů patří Itálii?",a:"800",cat:"quiz"},
+{q:"Které město je na světě nejdéle obydlené?",a:"Damašek",cat:"quiz"},
+{q:"Který z následujících bossů používá meč?",a:"Chuong",cat:"quiz"},
+{q:"Které z následujících měst se nachází v Dánsku?",a:"Kodaň",cat:"quiz"},
+{q:"Od jakého opasku je možnost mít 4 točitelné bonusy?",a:"Královský opasek",cat:"quiz"},
+{q:"Které z následujících monster má level 55?",a:"Bojovník s mečem útrapy",cat:"quiz"},
+{q:"Kdo nazpíval píseň Run to the Hills?",a:"Iron Maiden",cat:"song"},
+{q:"Které z následujících příšer má level 70?",a:"Bojový tygr, Vrba duchů",cat:"quiz"},
+{q:"Jakou barvu očí má pouštní bandita?",a:"Zelenou",cat:"quiz"},
+{q:"Kolik je týdně PvP eventů pro kategorie 1-55?",a:"(doplnit)",cat:"quiz"},
+{q:"Jaký bonus přidává Amur bílý?",a:"Drop Bonus",cat:"bonus"},
+{q:"Jaká je šance na vycraftění mytického Cor Draconis u alchymisty?",a:"85%",cat:"quiz"},
+{q:"V kterém století byla tzv. třicetiletá válka?",a:"17. století",cat:"quiz"},
+{q:"V jakém roce proběhla premiéra filmu Kolja?",a:"1996",cat:"quiz"},
+{q:"Kolik kostýmů lze dropout z World Bossů?",a:"13",cat:"quiz"},
+{q:"Která z následujících zemí používá žluté registrační značky?",a:"Nizozemsko",cat:"quiz"},
+{q:"Kdo nazpíval píseň Bleed It Out?",a:"Linkin Park",cat:"song"},
+{q:"Jaký druh reakce se používá při výrobě kyseliny chlorovodíkové?",a:"Chlorace",cat:"quiz"},
+{q:"Kolik bodů přidává navíc multiplier za 16b v 3. části osvícenství (5/5 otázek)?",a:"75",cat:"quiz"},
+{q:"Jaký level má příšera Hrdý černý obří ork?",a:"49",cat:"quiz"},
+{q:"V které zemi vynalezli panamský klobouk?",a:"Ekvádor",cat:"quiz"},
+{q:"V jakých letech proběhla 1. světová válka?",a:"1914–1918",cat:"quiz"},
+{q:"Jaký druh reakce se používá při výrobě nitroglycerinu?",a:"Nitrační reakce",cat:"quiz"},
+{q:"Kolik se nachází osvícenských svitků v oblasti Yayang?",a:"20",cat:"quiz"},
+{q:"Kolik yangů stojí u obchodníka s výstrojí krystalové náušnice?",a:"16 000",cat:"quiz"},
+{q:"Kolik stojí PvP bodů 1000 překližek u správce bitev?",a:"100",cat:"quiz"},
+{q:"Kde kotvil Kryštof Kolumbus, když objevil Ameriku?",a:"Na Bahamách",cat:"quiz"},
+{q:"Který z následujících bossů používá kovovou kouli?",a:"Goo-pae",cat:"quiz"},
+{q:"Kolik potřebujete surových Cor Draconis na jeden legendární (100% craft)?",a:"256",cat:"quiz"},
+{q:"Které z následujících měst má portál do druhé poloviny města vpravo nahoře?",a:"Bakra",cat:"quiz"},
+{q:"Kterému geometrickému útvaru se rovná kvadratická funkce?",a:"Parabola",cat:"quiz"},
+{q:"Kolik se rovná sinus 90 stupňů?",a:"1",cat:"quiz"},
+{q:"Hlavní město Malajsie je?",a:"Kuala Lumpur",cat:"quiz"},
+{q:"Od jaké úrovně osvícenství lze těžit turmalínovou rudu?",a:"M1",cat:"quiz"},
+{q:"Které z následujících monster má level 53?",a:"Muž útrapy",cat:"quiz"},
+{q:"Kolik zabitých bossů je potřeba na titul Slayer?",a:"600",cat:"quiz"},
+{q:"Kdo je autorem slavné knihy Harry Potter?",a:"J.K. Rowling",cat:"quiz"},
+{q:"Z které Shakespearovy hry je fráze 'Být či nebýt'?",a:"Hamlet",cat:"quiz"},
+{q:"Která z následujících příšer má level 49?",a:"Černý obří ork",cat:"quiz"},
+{q:"Jaká je šance na obranu proti postavě v Legendárním excelentním safíru +6?",a:"10%",cat:"quiz"},
+{q:"Ve které mapě se nachází Metin Zatracení?",a:"(doplnit)",cat:"quiz"},
+{q:"Kolik stojanů brnění má vedle sebe obchodník s výzbrojí v Pyungmoo?",a:"(doplnit)",cat:"quiz"},
+{q:"Které z následujících monster má level 74?",a:"Červený strom duchů",cat:"quiz"},
+{q:"Kolik stojí PvP bodů 1000 překližek u správce bitev?",a:"100",cat:"quiz"},
+{q:"Kolik se nachází osvícenských svitků v oblasti Bokjung?",a:"19",cat:"quiz"},
+{q:"V které mapě se nachází Metin Soumraku?",a:"Pohoří Gnollů",cat:"quiz"},
+{q:"Od jakého opasku je možnost mít 4 točitelné bonusy?",a:"Královský opasek",cat:"quiz"},
+{q:"Kolik druhů horních bonusů (1-5) lze točit v PvP brnění od 170?",a:"14",cat:"quiz"},
+{q:"Kolik se v Joanu nachází mostů?",a:"3",cat:"quiz"},
+{q:"V kterém americkém státě se nachází město Denver?",a:"Colorado",cat:"quiz"},
+{q:"Ve které mapě se nachází Metin Marnosti?",a:"Nefritový Záliv",cat:"quiz"},
+{q:"V které mapě se nachází Metin Zlomyslnosti?",a:"Útes Gautama",cat:"quiz"},
+{q:"Kde lze dropout Žlutý kámen?",a:"Jeskyně Strachu",cat:"drop"},
+{q:"Kolik zubů má Vůdce Žabovojáků?",a:"(doplnit)",cat:"quiz"},
+{q:"V které kanadské provincii se nachází město Vancouver?",a:"Britská Kolumbie",cat:"quiz"},
+{q:"Jaký bonus přidává Tenchi?",a:"Silný proti zemi",cat:"bonus"},
+{q:"Jaký je nejvyšší vrchol Afriky?",a:"Kilimandžáro",cat:"quiz"},
+{q:"Kolik ručních zbraní má vedle sebe skladník v Pyungmoo?",a:"11",cat:"quiz"},
+{q:"Kdo nazpíval píseň Gloria?",a:"The Midnight",cat:"song"},
+{q:"Proti komu bojovali Peršané v perských válkách?",a:"Řekům",cat:"quiz"},
+{q:"V které mapě se nachází Metin Soumraku?",a:"Pohoří Gnollů",cat:"quiz"},
+{q:"V které mapě můžete nalézt monstrum jménem Vražedný spár pavouk?",a:"Pavoučí jeskyně IV.",cat:"quiz"},
+{q:"V kterém měsíci oslavují Rusové Velkou říjnovou revoluci?",a:"Listopad",cat:"quiz"},
+{q:"Do kolika map (ne dungeonů) máte vstup na Stellarii na levelu 105?",a:"28",cat:"quiz"},
+{q:"Kdo nazpíval píseň Running up that hill?",a:"Kate Bush",cat:"song"},
+{q:"Které z následujících monster má level 77?",a:"Červená Dryáda",cat:"quiz"},
+{q:"Které z následujících monster má level 85?",a:"Podzemní Ledový Golem",cat:"quiz"},
+{q:"Kolik je v městské oblasti Bakry strážních věží?",a:"8",cat:"quiz"},
+];
+
+// ===== CATEGORIES =====
+const CATS = [
+  {id:"all",label:"Vše",tagClass:""},
+  {id:"map",label:"Mapy",tagClass:"tag-map"},
+  {id:"quiz",label:"Kvíz",tagClass:"tag-quiz"},
+  {id:"drop",label:"Dropy",tagClass:"tag-drop"},
+  {id:"bonus",label:"Bonusy",tagClass:"tag-bonus"},
+  {id:"song",label:"Písně",tagClass:"tag-song"},
+];
+
+const TAG_MAP = {map:"tag-map",quiz:"tag-quiz",drop:"tag-drop",bonus:"tag-bonus",song:"tag-song",geo:"tag-geo"};
+const LABEL_MAP = {map:"MAPA",quiz:"KVÍZ",drop:"DROP",bonus:"BONUS",song:"PÍSEŇ",geo:"GEO"};
+
+// ===== INIT =====
+let activeFilter = "all";
+const searchEl = document.getElementById("search");
+const clearBtn = document.getElementById("clearBtn");
+const resultsEl = document.getElementById("results");
+const resultsInfo = document.getElementById("resultsInfo");
+const filtersEl = document.getElementById("filters");
+const statsEl = document.getElementById("stats");
+
+statsEl.textContent = DATA.length + " položek";
+
+// Build filter buttons
+CATS.forEach(c => {
+  const btn = document.createElement("button");
+  btn.className = "filter-btn" + (c.id === "all" ? " active" : "");
+  btn.textContent = c.label;
+  btn.dataset.cat = c.id;
+  btn.addEventListener("click", () => {
+    activeFilter = c.id;
+    document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    render();
+  });
+  filtersEl.appendChild(btn);
+});
+
+// ===== SEARCH & RENDER =====
+function normalize(s){
+  return s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
+}
+
+function render(){
+  const raw = searchEl.value.trim();
+  const q = normalize(raw);
+  clearBtn.classList.toggle("show", raw.length > 0);
+
+  let filtered = DATA;
+  if(activeFilter !== "all"){
+    filtered = filtered.filter(d => d.cat === activeFilter);
+  }
+
+  if(q.length > 0){
+    // Score items
+    filtered = filtered.map(d => {
+      const nq = normalize(d.q);
+      const na = normalize(d.a);
+      let score = 0;
+      if(nq.includes(q)) score += 10;
+      if(na.includes(q)) score += 15;
+      // partial word match
+      const words = q.split(/\s+/);
+      words.forEach(w => {
+        if(w.length < 2) return;
+        if(nq.includes(w)) score += 3;
+        if(na.includes(w)) score += 5;
+      });
+      return {...d, score};
+    }).filter(d => d.score > 0).sort((a,b) => b.score - a.score);
+  }
+
+  resultsInfo.textContent = q.length > 0
+    ? `${filtered.length} výsledků pro "${raw}"`
+    : `${filtered.length} položek`;
+
+  if(filtered.length === 0){
+    resultsEl.innerHTML = `<div class="empty"><div class="empty-icon">🔍</div><div class="empty-text">Nic nenalezeno.<br>Zkus jiné klíčové slovo.</div></div>`;
+    return;
+  }
+
+  // Only render first 80 for perf
+  const toRender = filtered.slice(0, 80);
+  let html = "";
+  toRender.forEach(d => {
+    const tagClass = TAG_MAP[d.cat] || "tag-quiz";
+    const label = LABEL_MAP[d.cat] || "KVÍZ";
+    let qText = escHtml(d.q);
+    let aText = escHtml(d.a);
+    if(q.length > 0){
+      qText = highlight(qText, raw);
+      aText = highlight(aText, raw);
+    }
+    html += `<div class="card"><div class="card-q">${qText}</div><div class="card-a">${aText}</div><span class="card-tag ${tagClass}">${label}</span></div>`;
+  });
+  if(filtered.length > 80){
+    html += `<div style="text-align:center;padding:16px;color:var(--text2);font-size:13px">Zobrazeno 80 z ${filtered.length} — upřesni hledání</div>`;
+  }
+  resultsEl.innerHTML = html;
+}
+
+function escHtml(s){
+  return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+function highlight(text, query){
+  if(!query) return text;
+  const escaped = query.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
+  const re = new RegExp(`(${escaped})`,"gi");
+  return text.replace(re,"<mark>$1</mark>");
+}
+
+// ===== EVENTS =====
+let debounce;
+searchEl.addEventListener("input", () => {
+  clearTimeout(debounce);
+  debounce = setTimeout(render, 60);
+});
+clearBtn.addEventListener("click", () => {
+  searchEl.value = "";
+  searchEl.focus();
+  render();
+});
+
+// Initial render
+render();
+
+// Focus search on load
+setTimeout(() => searchEl.focus(), 300);
+</script>
+</body>
+</html>
